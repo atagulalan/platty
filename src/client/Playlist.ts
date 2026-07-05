@@ -1,5 +1,5 @@
-// Shared playlist client-side state. See ../../../spec/client/playlist-and-readiness.md and
-// ../../../spec/data-model.md#syncplayplaylist.
+// Shared playlist client-side state. See ../../spec/client/playlist-and-readiness.md and
+// ../../spec/data-model.md#syncplayplaylist.
 
 import { isURL, removeDirsFromPath } from "./mediaUtils.js";
 

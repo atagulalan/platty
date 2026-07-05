@@ -1,4 +1,4 @@
-// Wire message shapes. See ../../../spec/protocol/message-reference.md for the authoritative
+// Wire message shapes. See ../../spec/protocol/message-reference.md for the authoritative
 // field-by-field description these types mirror.
 
 export interface FileInfo {

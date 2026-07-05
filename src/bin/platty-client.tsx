@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // CLI entry point for Platty — a Syncplay-compatible terminal client.
 // Config is stored in ~/.config/platty/platty.ini (Syncplay-compatible INI schema).
 

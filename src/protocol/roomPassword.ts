@@ -1,5 +1,5 @@
 // Controlled ("managed") room naming/hash scheme. See
-// ../../../spec/server/rooms-and-permissions.md#password-format and #hash-computation.
+// ../../spec/server/rooms-and-permissions.md#password-format and #hash-computation.
 //
 // A controlled room's wire name is never the human-typed base name - it's a synthetic
 // "+<baseName>:<12-hex-char-hash>" string, matched by CONTROLLED_ROOM_REGEX.

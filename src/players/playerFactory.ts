@@ -1,4 +1,4 @@
-// See ../../../spec/players/abstraction-and-selection.md#player-selection.
+// See ../../spec/players/abstraction-and-selection.md#player-selection.
 
 import type { PlattyConfig } from "../config/types.js";
 import { syncplayIntfFromConfig } from "../config/toSyncplayIntfConfig.js";

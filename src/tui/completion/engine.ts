@@ -1,5 +1,5 @@
 // Completion engine — maps the current input line + cursor to a list of candidate replacements.
-// See ../../../../spec/config/tui-ux-plan.md Phase 3's "Completion sources" table.
+// See ../../spec/config/tui-ux-plan.md Phase 3's "Completion sources" table.
 
 import { COMMAND_REGISTRY } from "../commands/registry.js";
 import type { UserInfo } from "../../client/UserList.js";

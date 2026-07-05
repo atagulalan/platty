@@ -1,8 +1,7 @@
 # Platty
 
 Platty is a Syncplay-compatible watch-together client with a terminal (Ink/React) GUI. Built on
-the protocol specs in [`../spec/`](../spec/), compatible with the original Python Syncplay
-implementation in [`../source/`](../source/).
+the protocol specs in [`spec/`](spec/), based on the original Python Syncplay implementation.
 
 ## Quick start
 
@@ -51,15 +50,17 @@ reveals the rest (playlist undo, offset, operator auth, `/set`, and more — see
 ```
 /pause, /p              pause/play
 /toggle, /t             toggle ready
+/autoplay, /ap [on|off] toggle autoplay when everyone is ready
 /room, /r [room]        change room
 /add, /qa <file>        add to playlist
-/queueandselect, /qas   add to playlist and switch to it
+/queueandselect, /qas <file>  add and switch
 /select, /qs <n>        select playlist item
 /next, /qn              next item
 /seek, /s <sec>         seek (+/- for relative)
 /setup                  setup wizard
 /config, /settings      settings
 /help, /h               this help
+/status, /st            show connection and session info
 /exit, /quit            quit
 ```
 

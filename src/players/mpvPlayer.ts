@@ -1,5 +1,5 @@
 // mpv integration via mpv's real JSON IPC socket + bundled syncplayintf.lua overlay.
-// See ../../../spec/players/mpv-family.md.
+// See ../../spec/players/mpv-family.md.
 
 import { EventEmitter } from "node:events";
 import { spawn, execFile, type ChildProcessWithoutNullStreams } from "node:child_process";

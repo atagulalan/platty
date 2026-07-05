@@ -1,5 +1,5 @@
 // File-path completion for /qa, /qas, /add, /queue, /queueandselect.
-// See ../../../../spec/config/tui-ux-plan.md Phase 3's "File completer for /qa <path>" subsection.
+// See ../../spec/config/tui-ux-plan.md Phase 3's "File completer for /qa <path>" subsection.
 //
 //   /qa /home/xava/Mov          -> list /home/xava/Movies/*
 //   /qa /home/xava/Movies/foo   -> foo.mkv, foo.srt, ...

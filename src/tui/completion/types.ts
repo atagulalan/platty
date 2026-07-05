@@ -1,5 +1,5 @@
 // Shared types for the TUI autocomplete/suggestion system.
-// See ../../../../spec/config/tui-ux-plan.md Phase 3.
+// See ../../spec/config/tui-ux-plan.md Phase 3.
 
 /** A request to compute completions for the current state of the input line. */
 export interface CompletionRequest {

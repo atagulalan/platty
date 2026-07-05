@@ -1,5 +1,5 @@
-// Room / ControlledRoom data model. See ../../../spec/data-model.md and
-// ../../../spec/server/rooms-and-permissions.md.
+// Room / ControlledRoom data model. See ../../spec/data-model.md and
+// ../../spec/server/rooms-and-permissions.md.
 //
 // Simplification vs. the reference implementation: Python has a separate `PublicRoomManager`
 // subclass purely to change broadcast *scope* under --isolate-rooms. Here that's a boolean flag

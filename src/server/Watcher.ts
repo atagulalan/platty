@@ -1,4 +1,4 @@
-// Server-side façade around one connected client. See ../../../spec/data-model.md#watcher.
+// Server-side façade around one connected client. See ../../spec/data-model.md#watcher.
 
 import type { FileInfo } from "../protocol/types.js";
 import type { Room } from "./Room.js";

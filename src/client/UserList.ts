@@ -1,5 +1,5 @@
-// Room membership + readiness aggregation. See ../../../spec/data-model.md#syncplayuserlist and
-// ../../../spec/client/playlist-and-readiness.md.
+// Room membership + readiness aggregation. See ../../spec/data-model.md#syncplayuserlist and
+// ../../spec/client/playlist-and-readiness.md.
 
 import type { FileInfo } from "../protocol/types.js";
 import { sameFileDuration, sameFilename, sameFilesize } from "./privacy.js";

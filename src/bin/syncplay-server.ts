@@ -1,5 +1,5 @@
 // CLI entry point for the server (run via `npm run server -- [options]`).
-// See ../../../spec/server/overview-and-cli.md#full-cli-reference.
+// See ../../spec/server/overview-and-cli.md#full-cli-reference.
 
 import { Command } from "commander";
 import { SyncServer } from "../server/SyncServer.js";

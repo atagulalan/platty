@@ -1,5 +1,5 @@
-// The player integration contract. See ../../../spec/players/abstraction-and-selection.md and
-// ../../../spec/client/overview-and-state-machine.md#player-callback-contract.
+// The player integration contract. See ../../spec/players/abstraction-and-selection.md and
+// ../../spec/client/overview-and-state-machine.md#player-callback-contract.
 
 import type { EventEmitter } from "node:events";
 import type { OsdMood, OsdType } from "./mpvSyncplayIntf.js";

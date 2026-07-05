@@ -1,7 +1,7 @@
 // Client-side protocol handling. Mirrors SyncClientProtocol - see
-// ../../../spec/protocol/handshake-and-version-negotiation.md,
-// ../../../spec/protocol/state-sync-and-flow-control.md and
-// ../../../spec/protocol/ping-and-latency.md.
+// ../../spec/protocol/handshake-and-version-negotiation.md,
+// ../../spec/protocol/state-sync-and-flow-control.md and
+// ../../spec/protocol/ping-and-latency.md.
 
 import { EventEmitter } from "node:events";
 import { createHash } from "node:crypto";

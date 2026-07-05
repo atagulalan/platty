@@ -1,6 +1,6 @@
 // Server-side per-connection protocol handling. Mirrors SyncServerProtocol in
-// ../../../spec/protocol/*.md (handshake, state-sync-and-flow-control, ping-and-latency,
-// message-reference) and the room/permission logic in ../../../spec/server/*.md.
+// ../../spec/protocol/*.md (handshake, state-sync-and-flow-control, ping-and-latency,
+// message-reference) and the room/permission logic in ../../spec/server/*.md.
 
 import type { Socket } from "node:net";
 import { TLSSocket } from "node:tls";

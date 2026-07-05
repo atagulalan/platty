@@ -1,5 +1,5 @@
 // The client sync decision tree, as a pure function for testability. See
-// ../../../spec/client/sync-algorithm.md - numeric thresholds and evaluation order mirror that
+// ../../spec/client/sync-algorithm.md - numeric thresholds and evaluation order mirror that
 // document exactly; get this wrong and mixed-client rooms visibly fight each other.
 
 import {

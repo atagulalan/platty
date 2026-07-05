@@ -1,6 +1,6 @@
 // Persistence backends for --rooms-db-file / --stats-db-file / --permanent-rooms-file.
-// See ../../../spec/server/playlist-and-persistence.md and
-// ../../../spec/server/overview-and-cli.md#stats-db and #full-cli-reference.
+// See ../../spec/server/playlist-and-persistence.md and
+// ../../spec/server/overview-and-cli.md#stats-db and #full-cli-reference.
 //
 // Behavioral parity only - this is deliberately NOT byte-identical with the reference server's
 // own SQLite schema (there is no requirement to read/write the same .db files as the Python

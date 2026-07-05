@@ -1,4 +1,4 @@
-// Tiered `/help` text generator. See ../../../../spec/config/tui-ux-plan.md Phase 1.
+// Tiered `/help` text generator. See ../../spec/config/tui-ux-plan.md Phase 1.
 
 import { COMMAND_REGISTRY } from "./registry.js";
 

@@ -1,5 +1,5 @@
 // Numeric/behavioral constants extracted from the reference implementation.
-// Every value here is cited in ../../../spec/protocol/*.md and ../../../spec/client/sync-algorithm.md
+// Every value here is cited in ../../spec/protocol/*.md and ../../spec/client/sync-algorithm.md
 // Keep this file in sync with those specs - it is the single source of truth for tunables.
 
 export const DEFAULT_PORT = 8999;

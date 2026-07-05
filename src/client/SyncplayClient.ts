@@ -1,5 +1,5 @@
 // The client core state machine. Ties together the protocol connection, the player, the
-// playlist/userlist, and the sync algorithm. See ../../../spec/client/overview-and-state-machine.md.
+// playlist/userlist, and the sync algorithm. See ../../spec/client/overview-and-state-machine.md.
 //
 // Known simplifications vs. the reference client (see README "Known scope cuts"):
 //   - Controller status is tracked from controllerAuth results, not derived from periodic List

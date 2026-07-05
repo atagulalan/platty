@@ -1,5 +1,5 @@
 // Command registry — single source of truth for dispatch, help, and autocomplete.
-// See ../../../../spec/config/tui-ux-plan.md Phase 0 and source/syncplay/constants.py's
+// See ../../spec/config/tui-ux-plan.md Phase 0 and source/syncplay/constants.py's
 // COMMANDS_* alias lists (the canonical parity reference).
 
 import type { SyncplayClient } from "../../client/SyncplayClient.js";

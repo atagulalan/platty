@@ -1,4 +1,4 @@
-// See ../../../spec/server/rooms-and-permissions.md#room-lifecycle and #room-isolation.
+// See ../../spec/server/rooms-and-permissions.md#room-lifecycle and #room-isolation.
 
 import { isControlledRoomName } from "../protocol/roomPassword.js";
 import { Room, ControlledRoom } from "./Room.js";

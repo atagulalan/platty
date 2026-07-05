@@ -1,6 +1,6 @@
 // VLC integration via the bundled `syncplay.lua` interface script (copied verbatim from the
 // reference project's resources/lua/intf/syncplay.lua - see resources/syncplay.lua in this repo
-// and the attribution below). See ../../../spec/players/vlc.md for the full command vocabulary
+// and the attribution below). See ../../spec/players/vlc.md for the full command vocabulary
 // and the platform-specific Lua interface install paths this mirrors.
 
 import { EventEmitter } from "node:events";

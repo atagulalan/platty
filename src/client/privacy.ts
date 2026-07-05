@@ -1,5 +1,5 @@
 // Filename/filesize privacy modes and the (metadata-only, not content-hash) file-matching
-// heuristics. See ../../../spec/client/privacy-and-file-matching.md.
+// heuristics. See ../../spec/client/privacy-and-file-matching.md.
 //
 // There is no content/checksum hashing of media files anywhere - "same file" is judged purely
 // from filename + filesize + duration. The SHA-256 hashing here is a privacy obfuscation

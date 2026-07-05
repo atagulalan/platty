@@ -1,4 +1,4 @@
-// MOTD templating. See ../../../spec/server/overview-and-cli.md#motd.
+// MOTD templating. See ../../spec/server/overview-and-cli.md#motd.
 // ASCII-art rendering is a *client* rendering concern (monospace + nbsp substitution) - the
 // server only ever needs to pass the raw string through.
 

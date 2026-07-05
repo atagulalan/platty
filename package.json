@@ -3,13 +3,28 @@
   "version": "0.1.0",
   "description": "Platty — Syncplay-compatible watch-together client with a terminal (Ink) GUI",
   "type": "module",
-  "private": true,
+  "bin": {
+    "platty": "dist/bin/platty-client.js"
+  },
+  "files": [
+    "dist",
+    "resources"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atagulalan/platty.git"
+  },
+  "homepage": "https://github.com/atagulalan/platty#readme",
   "scripts": {
     "server": "tsx src/bin/syncplay-server.ts",
     "client": "tsx src/bin/platty-client.tsx",
     "platty": "tsx src/bin/platty-client.tsx",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "test": "tsx test/roomManager.test.ts && tsx test/commandRegistry.test.ts && tsx test/completion.test.ts && tsx test/autoplay.test.ts && tsx test/smoke.ts"
   },
   "dependencies": {

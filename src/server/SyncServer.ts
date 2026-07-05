@@ -1,4 +1,4 @@
-// The server-wide singleton (factory equivalent). See ../../../spec/server/overview-and-cli.md.
+// The server-wide singleton (factory equivalent). See ../../spec/server/overview-and-cli.md.
 //
 // Implements: room isolation, managed/controlled rooms, playlist validation, MOTD templating
 // (including the old-client warning and userIp substitution), chat/username/filename/room-name

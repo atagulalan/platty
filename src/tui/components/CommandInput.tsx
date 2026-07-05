@@ -1,5 +1,5 @@
 // InputBar replacement with Tab/ghost-text autocomplete. See
-// ../../../../spec/config/tui-ux-plan.md Phase 3 ("Enhanced InputBar").
+// ../../spec/config/tui-ux-plan.md Phase 3 ("Enhanced InputBar").
 //
 // ink-text-input doesn't expose ghost-suffix rendering, so the text field is hand-rolled here
 // with useInput + manual cursor/text state (mirroring ink-text-input's own left/right/backspace

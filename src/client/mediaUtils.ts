@@ -1,5 +1,5 @@
 // URL detection and trusted-domain checks for automatic playlist file switching.
-// See ../../../spec/client/playlist-and-readiness.md and source/syncplay/client.py:565-612.
+// See ../../spec/client/playlist-and-readiness.md and source/syncplay/client.py:565-612.
 
 const TRUSTABLE_WEB_PROTOCOLS = new Set(["http", "https"]);
 

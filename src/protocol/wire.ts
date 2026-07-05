@@ -1,5 +1,5 @@
 // Newline-delimited JSON framing over a raw TCP socket.
-// Mirrors Twisted's LineReceiver defaults exactly - see ../../../spec/protocol/wire-format.md.
+// Mirrors Twisted's LineReceiver defaults exactly - see ../../spec/protocol/wire-format.md.
 //
 // - delimiter: "\r\n" (never configurable in the reference implementation, so neither is this)
 // - max line length: 16384 bytes; exceeding it silently closes the connection (no Error frame)

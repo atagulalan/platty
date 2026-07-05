@@ -1,5 +1,5 @@
 // RTT / EWMA / forward-delay estimation, identical on both client and server sides.
-// See ../../../spec/protocol/ping-and-latency.md - both peers run this same algorithm
+// See ../../spec/protocol/ping-and-latency.md - both peers run this same algorithm
 // independently, feeding it each other's self-reported numbers.
 
 import { PING_MOVING_AVERAGE_WEIGHT } from "./constants.js";

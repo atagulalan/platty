@@ -1,5 +1,5 @@
 // Resolves shared-playlist filenames to local paths by scanning mediaSearchDirectories.
-// See ../../../spec/client/playlist-and-readiness.md#resolving-a-playlist-entry-to-a-local-file
+// See ../../spec/client/playlist-and-readiness.md#resolving-a-playlist-entry-to-a-local-file
 // and source/syncplay/client.py:2202-2333.
 
 import { readdirSync, statSync } from "node:fs";

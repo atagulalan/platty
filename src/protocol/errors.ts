@@ -1,4 +1,4 @@
-// Error message catalogue. See ../../../spec/protocol/message-reference.md#errors.
+// Error message catalogue. See ../../spec/protocol/message-reference.md#errors.
 // There is deliberately no "version mismatch" or "room/username/message too long" error -
 // the reference implementation truncates/reverts those silently instead of rejecting them.
 

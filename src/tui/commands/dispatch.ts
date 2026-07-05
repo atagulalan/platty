@@ -1,5 +1,5 @@
 // Parses a slash command (without the leading "/") and runs it against the registry.
-// See ../../../../spec/config/tui-ux-plan.md Phase 0.
+// See ../../spec/config/tui-ux-plan.md Phase 0.
 
 import { COMMAND_REGISTRY, type CommandContext } from "./registry.js";
 import { renderHelp } from "./help.js";

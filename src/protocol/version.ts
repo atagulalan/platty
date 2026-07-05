@@ -1,5 +1,5 @@
 // Version comparison + the permanent "1.2.255" backward-compatibility hack.
-// See ../../../spec/protocol/handshake-and-version-negotiation.md.
+// See ../../spec/protocol/handshake-and-version-negotiation.md.
 
 import { LEGACY_HELLO_VERSION, MIN_VERSION, REAL_VERSION } from "./constants.js";
 
