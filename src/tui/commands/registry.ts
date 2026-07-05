@@ -74,9 +74,13 @@ function listUsers(ctx: CommandContext): void {
     byRoom.set(u.room, list);
   }
   for (const [roomName, roomUsers] of byRoom) {
-    ctx.pushLine(`In room "${roomName}"${roomName === ctx.client.currentRoom ? " (current)" : ""}:`);
+    ctx.pushLine(
+      `In room "${roomName}"${roomName === ctx.client.currentRoom ? " (current)" : ""}:`,
+    );
     for (const u of roomUsers) {
-      const flags = [u.controller ? "controller" : null, u.ready ? "ready" : null].filter(Boolean).join(", ");
+      const flags = [u.controller ? "controller" : null, u.ready ? "ready" : null]
+        .filter(Boolean)
+        .join(", ");
       const marker = u.username === ctx.client.selfUsername ? "*" : " ";
       const fileInfo = u.file ? ` — ${u.file.name}` : "";
       ctx.pushLine(`  ${marker}${u.username}${flags ? ` (${flags})` : ""}${fileInfo}`);
@@ -283,7 +287,9 @@ export const COMMAND_REGISTRY: CommandDef[] = [
         ctx.pushLine("Usage: /offset <sec>  e.g. /offset 0.5  /offset +0.1", "error");
         return;
       }
-      ctx.client.setUserOffset(parsed.relative ? ctx.client.userOffsetSeconds + parsed.value : parsed.value);
+      ctx.client.setUserOffset(
+        parsed.relative ? ctx.client.userOffsetSeconds + parsed.value : parsed.value,
+      );
     },
   },
   {

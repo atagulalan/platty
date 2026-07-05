@@ -3,7 +3,11 @@
 // server only ever needs to pass the raw string through.
 
 import { readFileSync } from "node:fs";
-import { RECENT_CLIENT_THRESHOLD, SERVER_MAX_TEMPLATE_LENGTH, WARN_OLD_CLIENTS } from "../protocol/constants.js";
+import {
+  RECENT_CLIENT_THRESHOLD,
+  SERVER_MAX_TEMPLATE_LENGTH,
+  WARN_OLD_CLIENTS,
+} from "../protocol/constants.js";
 import { meetsMinVersion } from "../protocol/version.js";
 
 export interface MotdContext {
@@ -51,7 +55,11 @@ function oldClientWarning(clientVersion: string): string {
  *    wins outright (no warning prepended) - matches the reference's try/except structure, where
  *    the warning is only added on the success path.
  */
-export function renderMotdFor(template: string | null, ctx: MotdContext, clientVersion: string): string {
+export function renderMotdFor(
+  template: string | null,
+  ctx: MotdContext,
+  clientVersion: string,
+): string {
   const oldClient = WARN_OLD_CLIENTS && !meetsMinVersion(clientVersion, RECENT_CLIENT_THRESHOLD);
 
   if (!template) {

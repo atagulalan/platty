@@ -29,7 +29,10 @@ export class FileSwitchManager {
    * Locate a playlist entry on disk. Checks the currently-open file first, then the background
    * cache, then probes each configured media directory directly and recursively.
    */
-  findFilepath(filename: string | null | undefined, currentFile?: { name: string; path: string } | null): string | null {
+  findFilepath(
+    filename: string | null | undefined,
+    currentFile?: { name: string; path: string } | null,
+  ): string | null {
     if (!filename) return null;
 
     if (currentFile && sameFilename(filename, currentFile.name) && currentFile.path) {
@@ -69,7 +72,10 @@ export class FileSwitchManager {
   private restartTimer(): void {
     if (this.refreshTimer) clearInterval(this.refreshTimer);
     if (this.mediaDirectories.length === 0) return;
-    this.refreshTimer = setInterval(() => void this.refreshCache(), FOLDER_SEARCH_DOUBLE_CHECK_INTERVAL_MS);
+    this.refreshTimer = setInterval(
+      () => void this.refreshCache(),
+      FOLDER_SEARCH_DOUBLE_CHECK_INTERVAL_MS,
+    );
   }
 
   private async refreshCache(): Promise<void> {

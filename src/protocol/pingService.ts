@@ -26,7 +26,9 @@ export class PingService {
     if (rtt < 0 || senderRtt < 0) return; // guard against clock skew / bogus data
 
     this.rtt = rtt;
-    this.avrRtt = this.hasSample ? this.avrRtt * PING_MOVING_AVERAGE_WEIGHT + rtt * (1 - PING_MOVING_AVERAGE_WEIGHT) : rtt;
+    this.avrRtt = this.hasSample
+      ? this.avrRtt * PING_MOVING_AVERAGE_WEIGHT + rtt * (1 - PING_MOVING_AVERAGE_WEIGHT)
+      : rtt;
     this.hasSample = true;
 
     this.forwardDelay = senderRtt < rtt ? this.avrRtt / 2 + (rtt - senderRtt) : this.avrRtt / 2;

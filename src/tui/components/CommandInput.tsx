@@ -100,22 +100,15 @@ export function CommandInput({
     () =>
       dismissed
         ? { suggestions: [] as string[], replaceFrom: completionCursor }
-        : getCompletions(
-            { line: completionLine, cursor: completionCursor },
-            engineCtx,
-          ),
+        : getCompletions({ line: completionLine, cursor: completionCursor }, engineCtx),
     [dismissed, completionLine, completionCursor, engineCtx],
   );
 
   const suggestionCount = completion.suggestions.length;
   const overlaySelectedIndex = suggestionBrowse ? selectedIndex : null;
   const submitSuggestionIndex = suggestionBrowse ? selectedIndex : 0;
-  const ghostSuggestion =
-    suggestionCount > 0 ? completion.suggestions[0] : undefined;
-  const currentToken = completionLine.slice(
-    completion.replaceFrom,
-    completionCursor,
-  );
+  const ghostSuggestion = suggestionCount > 0 ? completion.suggestions[0] : undefined;
+  const currentToken = completionLine.slice(completion.replaceFrom, completionCursor);
   const ghost =
     !suggestionBrowse &&
     !historyBrowse &&
@@ -150,13 +143,7 @@ export function CommandInput({
     if (lastNotifiedSuggestionsRef.current === key) return;
     lastNotifiedSuggestionsRef.current = key;
     notify(payload);
-  }, [
-    active,
-    historyBrowse,
-    suggestionCount,
-    completion.suggestions,
-    overlaySelectedIndex,
-  ]);
+  }, [active, historyBrowse, suggestionCount, completion.suggestions, overlaySelectedIndex]);
 
   useEffect(() => {
     return () => {
@@ -224,16 +211,11 @@ export function CommandInput({
         exitSuggestionBrowse();
         return;
       }
-      applySuggestionPreview(
-        selectedIndex - 1,
-        suggestionBrowse,
-        completion.suggestions,
-      );
+      applySuggestionPreview(selectedIndex - 1, suggestionBrowse, completion.suggestions);
       return;
     }
 
-    const nextIndex =
-      selectedIndex >= suggestionCount - 1 ? 0 : selectedIndex + 1;
+    const nextIndex = selectedIndex >= suggestionCount - 1 ? 0 : selectedIndex + 1;
     applySuggestionPreview(nextIndex, suggestionBrowse, completion.suggestions);
   };
 
@@ -275,7 +257,7 @@ export function CommandInput({
 
   const navigateHistory = (direction: "up" | "down"): boolean => {
     const browse = historyBrowse;
-    const prefix = browse?.prefix ?? (suggestionBrowse?.savedValue ?? value);
+    const prefix = browse?.prefix ?? suggestionBrowse?.savedValue ?? value;
     const filtered = filterHistory(historyRef.current, prefix);
     if (filtered.length === 0) return false;
 
@@ -319,161 +301,153 @@ export function CommandInput({
     return { value, cursor };
   };
 
-  useInput((input, key) => {
-    if (key.escape) {
-      exitSuggestionBrowse();
-      if (historyBrowse) {
-        setValue(historyBrowse.savedLine);
-        setCursor(historyBrowse.savedLine.length);
-        setHistoryBrowse(null);
-      }
-      setDismissed(true);
-      return;
-    }
-
-    if (key.return) {
-      const submitted =
-        !historyBrowse && !dismissed && suggestionCount > 0
-          ? applySelectedSuggestion()
-          : value;
-      onSubmit(submitted);
-      if (submitted) {
-        historyRef.current = pushHistory(historyRef.current, submitted);
-      }
-      setHistoryBrowse(null);
-      setValue("");
-      setCursor(0);
-      clearSuggestionState();
-      return;
-    }
-
-    if (key.tab) {
-      exitHistoryBrowse();
-      const base = editingBase();
-      if (suggestionBrowse) {
-        setValue(base.value);
-        setCursor(base.cursor);
-        setSuggestionBrowse(null);
-      }
-      if (tabSession && tabSession.candidates.length > 0) {
-        const nextIndex = (tabSession.index + 1) % tabSession.candidates.length;
-        const candidate = tabSession.candidates[nextIndex]!;
-        const newValue =
-          base.value.slice(0, tabSession.replaceFrom) +
-          candidate +
-          base.value.slice(base.cursor);
-        setValue(newValue);
-        setCursor(tabSession.replaceFrom + candidate.length);
-        setTabSession({ ...tabSession, index: nextIndex });
+  useInput(
+    (input, key) => {
+      if (key.escape) {
+        exitSuggestionBrowse();
+        if (historyBrowse) {
+          setValue(historyBrowse.savedLine);
+          setCursor(historyBrowse.savedLine.length);
+          setHistoryBrowse(null);
+        }
+        setDismissed(true);
         return;
       }
-      const fresh = getCompletions(
-        { line: base.value, cursor: base.cursor },
-        engineCtx,
-      );
-      if (fresh.suggestions.length > 0) {
-        const candidate = fresh.suggestions[0]!;
-        const newValue =
-          base.value.slice(0, fresh.replaceFrom) +
-          candidate +
-          base.value.slice(base.cursor);
-        setValue(newValue);
-        setCursor(fresh.replaceFrom + candidate.length);
-        setTabSession({
-          replaceFrom: fresh.replaceFrom,
-          candidates: fresh.suggestions,
-          index: 0,
-        });
+
+      if (key.return) {
+        const submitted =
+          !historyBrowse && !dismissed && suggestionCount > 0 ? applySelectedSuggestion() : value;
+        onSubmit(submitted);
+        if (submitted) {
+          historyRef.current = pushHistory(historyRef.current, submitted);
+        }
+        setHistoryBrowse(null);
+        setValue("");
+        setCursor(0);
+        clearSuggestionState();
+        return;
       }
-      setDismissed(false);
-      return;
-    }
 
-    if (tabSession) setTabSession(null);
+      if (key.tab) {
+        exitHistoryBrowse();
+        const base = editingBase();
+        if (suggestionBrowse) {
+          setValue(base.value);
+          setCursor(base.cursor);
+          setSuggestionBrowse(null);
+        }
+        if (tabSession && tabSession.candidates.length > 0) {
+          const nextIndex = (tabSession.index + 1) % tabSession.candidates.length;
+          const candidate = tabSession.candidates[nextIndex]!;
+          const newValue =
+            base.value.slice(0, tabSession.replaceFrom) + candidate + base.value.slice(base.cursor);
+          setValue(newValue);
+          setCursor(tabSession.replaceFrom + candidate.length);
+          setTabSession({ ...tabSession, index: nextIndex });
+          return;
+        }
+        const fresh = getCompletions({ line: base.value, cursor: base.cursor }, engineCtx);
+        if (fresh.suggestions.length > 0) {
+          const candidate = fresh.suggestions[0]!;
+          const newValue =
+            base.value.slice(0, fresh.replaceFrom) + candidate + base.value.slice(base.cursor);
+          setValue(newValue);
+          setCursor(fresh.replaceFrom + candidate.length);
+          setTabSession({
+            replaceFrom: fresh.replaceFrom,
+            candidates: fresh.suggestions,
+            index: 0,
+          });
+        }
+        setDismissed(false);
+        return;
+      }
 
-    if (key.upArrow || key.downArrow) {
-      const direction = key.upArrow ? "up" : "down";
-      if (historyBrowse) {
+      if (tabSession) setTabSession(null);
+
+      if (key.upArrow || key.downArrow) {
+        const direction = key.upArrow ? "up" : "down";
+        if (historyBrowse) {
+          navigateHistory(direction);
+          return;
+        }
+        if (hasActiveAutosuggest) {
+          if (suggestionCount > 1) {
+            navigateSuggestions(direction);
+          }
+          return;
+        }
         navigateHistory(direction);
         return;
       }
-      if (hasActiveAutosuggest) {
-        if (suggestionCount > 1) {
-          navigateSuggestions(direction);
-        }
-        return;
-      }
-      navigateHistory(direction);
-      return;
-    }
 
-    if (key.rightArrow || key.leftArrow) {
-      if (suggestionBrowse) {
-        acceptHighlightedSuggestion();
-        return;
-      }
-      if (key.rightArrow) {
-        if (cursor === value.length && ghost && ghostSuggestion) {
-          exitHistoryBrowse();
-          const preview = buildPreview(
-            {
-              savedValue: value,
-              savedCursor: cursor,
-              replaceFrom: completion.replaceFrom,
-            },
-            ghostSuggestion,
-          );
-          setValue(preview.value);
-          setCursor(preview.cursor);
-          clearSuggestionState();
+      if (key.rightArrow || key.leftArrow) {
+        if (suggestionBrowse) {
+          acceptHighlightedSuggestion();
           return;
         }
-        setCursor((c) => Math.min(value.length, c + 1));
+        if (key.rightArrow) {
+          if (cursor === value.length && ghost && ghostSuggestion) {
+            exitHistoryBrowse();
+            const preview = buildPreview(
+              {
+                savedValue: value,
+                savedCursor: cursor,
+                replaceFrom: completion.replaceFrom,
+              },
+              ghostSuggestion,
+            );
+            setValue(preview.value);
+            setCursor(preview.cursor);
+            clearSuggestionState();
+            return;
+          }
+          setCursor((c) => Math.min(value.length, c + 1));
+          return;
+        }
+        setCursor((c) => Math.max(0, c - 1));
         return;
       }
-      setCursor((c) => Math.max(0, c - 1));
-      return;
-    }
 
-    if (key.backspace || key.delete) {
-      const base = editingBase();
-      if (suggestionBrowse) {
-        setValue(base.value);
-        setCursor(base.cursor);
-        setSuggestionBrowse(null);
-        setSelectedIndex(0);
+      if (key.backspace || key.delete) {
+        const base = editingBase();
+        if (suggestionBrowse) {
+          setValue(base.value);
+          setCursor(base.cursor);
+          setSuggestionBrowse(null);
+          setSelectedIndex(0);
+        }
+        if (base.cursor > 0) {
+          exitHistoryBrowse();
+          const newValue = base.value.slice(0, base.cursor - 1) + base.value.slice(base.cursor);
+          setValue(newValue);
+          setCursor(base.cursor - 1);
+          setDismissed(false);
+          setTabSession(null);
+        }
+        return;
       }
-      if (base.cursor > 0) {
+
+      if (key.ctrl || key.meta) {
+        return;
+      }
+
+      if (input) {
         exitHistoryBrowse();
-        const newValue =
-          base.value.slice(0, base.cursor - 1) + base.value.slice(base.cursor);
+        const base = editingBase();
+        if (suggestionBrowse) {
+          setSuggestionBrowse(null);
+          setSelectedIndex(0);
+        }
+        const newValue = base.value.slice(0, base.cursor) + input + base.value.slice(base.cursor);
         setValue(newValue);
-        setCursor(base.cursor - 1);
+        setCursor(base.cursor + input.length);
         setDismissed(false);
         setTabSession(null);
       }
-      return;
-    }
-
-    if (key.ctrl || key.meta) {
-      return;
-    }
-
-    if (input) {
-      exitHistoryBrowse();
-      const base = editingBase();
-      if (suggestionBrowse) {
-        setSuggestionBrowse(null);
-        setSelectedIndex(0);
-      }
-      const newValue =
-        base.value.slice(0, base.cursor) + input + base.value.slice(base.cursor);
-      setValue(newValue);
-      setCursor(base.cursor + input.length);
-      setDismissed(false);
-      setTabSession(null);
-    }
-  }, { isActive: active });
+    },
+    { isActive: active },
+  );
 
   const before = value.slice(0, cursor);
   const after = cursor < value.length ? value.slice(cursor + 1) : "";
@@ -496,9 +470,7 @@ export function CommandInput({
               ghost ? (
                 <>
                   <Text inverse>{ghost[0]}</Text>
-                  {ghost.length > 1 ? (
-                    <Text dimColor>{ghost.slice(1)}</Text>
-                  ) : null}
+                  {ghost.length > 1 ? <Text dimColor>{ghost.slice(1)}</Text> : null}
                 </>
               ) : (
                 <Text inverse> </Text>

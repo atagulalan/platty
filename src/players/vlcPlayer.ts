@@ -19,7 +19,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const LUA_SCRIPT_PATH = join(__dirname, "..", "..", "resources", "syncplay.lua");
 
 function luaInterfaceUserDir(): string {
-  if (platform === "darwin") return join(homedir(), "Library", "Application Support", "org.videolan.vlc", "lua", "intf");
+  if (platform === "darwin")
+    return join(homedir(), "Library", "Application Support", "org.videolan.vlc", "lua", "intf");
   if (platform === "win32") return join(process.env.APPDATA ?? homedir(), "vlc", "lua", "intf");
   return join(homedir(), ".local", "share", "vlc", "lua", "intf");
 }
@@ -174,7 +175,10 @@ export class VlcPlayer extends EventEmitter implements Player {
             reject(new Error(`Could not connect to VLC's syncplay.lua interface on port ${port}`));
             return;
           }
-          setTimeout(() => this.connectWithRetry(port, attemptsLeft - 1).then(resolve, reject), 300);
+          setTimeout(
+            () => this.connectWithRetry(port, attemptsLeft - 1).then(resolve, reject),
+            300,
+          );
         });
       };
       attempt();
@@ -270,7 +274,11 @@ export class VlcPlayer extends EventEmitter implements Player {
         const versionToken = value.split(/\s+/)[0] ?? "";
         this.vlcVersion = versionToken;
         if (versionToken && !meetsMinVersion(versionToken, VLC_MIN_VERSION)) {
-          this.vlcVersionReject?.(new Error(`VLC version ${versionToken} is too old for Syncplay - requires VLC >= ${VLC_MIN_VERSION}. Please upgrade VLC.`));
+          this.vlcVersionReject?.(
+            new Error(
+              `VLC version ${versionToken} is too old for Syncplay - requires VLC >= ${VLC_MIN_VERSION}. Please upgrade VLC.`,
+            ),
+          );
         } else {
           this.vlcVersionResolve?.();
         }
@@ -297,7 +305,10 @@ export class VlcPlayer extends EventEmitter implements Player {
     // actually changed since the last emitted status - cuts down redundant no-op events, matching
     // the Python client's dedup behavior (a lighter-weight variant scoped to the emit boundary
     // rather than vlc.py's more elaborate per-line _previousPosition bookkeeping).
-    if (this.lastEmittedPaused === this.lastPaused && this.lastEmittedPosition === this.lastPosition) {
+    if (
+      this.lastEmittedPaused === this.lastPaused &&
+      this.lastEmittedPosition === this.lastPosition
+    ) {
       return;
     }
     this.lastEmittedPaused = this.lastPaused;

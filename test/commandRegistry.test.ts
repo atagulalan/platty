@@ -6,7 +6,10 @@ import { COMMAND_REGISTRY, type CommandContext } from "../src/tui/commands/regis
 import { dispatchCommand } from "../src/tui/commands/dispatch.js";
 import { renderHelp } from "../src/tui/commands/help.js";
 
-function makeCtx(overrides: Partial<CommandContext> = {}): { ctx: CommandContext; lines: string[] } {
+function makeCtx(overrides: Partial<CommandContext> = {}): {
+  ctx: CommandContext;
+  lines: string[];
+} {
   const lines: string[] = [];
   const ctx: CommandContext = {
     client: {
@@ -52,7 +55,10 @@ function makeCtx(overrides: Partial<CommandContext> = {}): { ctx: CommandContext
   const seen = new Map<string, string>();
   for (const def of COMMAND_REGISTRY) {
     for (const alias of def.aliases) {
-      assert.ok(!seen.has(alias), `alias "${alias}" claimed by both "${seen.get(alias)}" and "${def.name}"`);
+      assert.ok(
+        !seen.has(alias),
+        `alias "${alias}" claimed by both "${seen.get(alias)}" and "${def.name}"`,
+      );
       seen.set(alias, def.name);
     }
   }
@@ -62,7 +68,9 @@ function makeCtx(overrides: Partial<CommandContext> = {}): { ctx: CommandContext
 // Dispatch resolves an alias to its canonical command.
 {
   let paused = false;
-  const { ctx } = makeCtx({ client: { ...makeCtx().ctx.client, togglePlayPause: () => (paused = true) } });
+  const { ctx } = makeCtx({
+    client: { ...makeCtx().ctx.client, togglePlayPause: () => (paused = true) },
+  });
   dispatchCommand("p", ctx);
   assert.strictEqual(paused, true);
   console.log("commandRegistry.test.ts: PASS short alias dispatches to handler");

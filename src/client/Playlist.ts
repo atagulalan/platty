@@ -62,7 +62,13 @@ export class Playlist {
    * reconnecting is interpreted as "the room forgot my playlist" rather than a real remote edit.
    * See spec/client/reconnection-and-resilience.md#playlist-restoration.
    */
-  needsRestoring(receivedFiles: string[], fromRemoteUser: boolean, mayNeedRestoring: boolean): boolean {
-    return mayNeedRestoring && !fromRemoteUser && receivedFiles.length === 0 && this.files.length > 0;
+  needsRestoring(
+    receivedFiles: string[],
+    fromRemoteUser: boolean,
+    mayNeedRestoring: boolean,
+  ): boolean {
+    return (
+      mayNeedRestoring && !fromRemoteUser && receivedFiles.length === 0 && this.files.length > 0
+    );
   }
 }

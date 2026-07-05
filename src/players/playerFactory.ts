@@ -7,9 +7,14 @@ import { MpvPlayer } from "./mpvPlayer.js";
 import { VlcPlayer } from "./vlcPlayer.js";
 import { NullPlayer } from "./NullPlayer.js";
 
-export type PlayerKind = "mpv" | "vlc" | "null" | "mpvnet" | "iina" | "memento" | "mplayer" | "mpc-hc" | "mpc-be";
+export type PlayerKind =
+  "mpv" | "vlc" | "null" | "mpvnet" | "iina" | "memento" | "mplayer" | "mpc-hc" | "mpc-be";
 
-export function createPlayer(kind: PlayerKind, executablePath?: string, config?: SplattyConfig): Player {
+export function createPlayer(
+  kind: PlayerKind,
+  executablePath?: string,
+  config?: SplattyConfig,
+): Player {
   const syncplayIntf = config ? syncplayIntfFromConfig(config) : undefined;
 
   switch (kind) {

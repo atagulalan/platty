@@ -65,7 +65,9 @@ class SqliteRoomsStore implements RoomsStore {
 
   loadAll(): RoomRecord[] {
     const rows = this.db
-      .prepare("SELECT name, playlist, playlistIndex, position, lastSavedUpdate FROM persistent_rooms")
+      .prepare(
+        "SELECT name, playlist, playlistIndex, position, lastSavedUpdate FROM persistent_rooms",
+      )
       .all() as Array<{
       name: string;
       playlist: string | null;
@@ -93,7 +95,13 @@ class SqliteRoomsStore implements RoomsStore {
            position = excluded.position,
            lastSavedUpdate = excluded.lastSavedUpdate`,
       )
-      .run(record.name, JSON.stringify(record.playlist), record.playlistIndex, record.position, record.lastSavedUpdate);
+      .run(
+        record.name,
+        JSON.stringify(record.playlist),
+        record.playlistIndex,
+        record.position,
+        record.lastSavedUpdate,
+      );
   }
 
   delete(name: string): void {
@@ -167,7 +175,9 @@ class SqliteStatsStore implements StatsStore {
     // Same shape as the reference server's `clients_snapshots` table (one row per connected
     // client per snapshot tick) - querying COUNT(*)/GROUP BY version over a given snapshot_time
     // recovers both the connection count and the version histogram.
-    this.db.exec("CREATE TABLE IF NOT EXISTS clients_snapshots (snapshot_time INTEGER, version STRING)");
+    this.db.exec(
+      "CREATE TABLE IF NOT EXISTS clients_snapshots (snapshot_time INTEGER, version STRING)",
+    );
   }
 
   recordSnapshot(versions: string[]): void {
@@ -203,7 +213,11 @@ class JsonStatsStore implements StatsStore {
   recordSnapshot(versions: string[]): void {
     const histogram: Record<string, number> = {};
     for (const version of versions) histogram[version] = (histogram[version] ?? 0) + 1;
-    this.snapshots.push({ snapshotTime: Math.floor(Date.now() / 1000), connectionCount: versions.length, versions: histogram });
+    this.snapshots.push({
+      snapshotTime: Math.floor(Date.now() / 1000),
+      connectionCount: versions.length,
+      versions: histogram,
+    });
     writeFileSync(this.path, JSON.stringify(this.snapshots), "utf8");
   }
 

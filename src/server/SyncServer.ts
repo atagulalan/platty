@@ -25,7 +25,12 @@ import { Room, ControlledRoom } from "./Room.js";
 import type { Watcher } from "./Watcher.js";
 import { ServerConnection } from "./ServerConnection.js";
 import type { ListMessage, ListUserEntry } from "../protocol/types.js";
-import { openRoomsStore, openStatsStore, loadPermanentRoomNames, type StatsStore } from "./persistence.js";
+import {
+  openRoomsStore,
+  openStatsStore,
+  loadPermanentRoomNames,
+  type StatsStore,
+} from "./persistence.js";
 
 export interface TlsCredentials {
   cert: Buffer;
@@ -95,13 +100,18 @@ export class SyncServer {
     // --rooms-db-file/--permanent-rooms-file support entirely under --isolate-rooms (it
     // constructs a bare PublicRoomManager with no arguments in that case) - replicate that by
     // simply not opening/passing the stores when isolated.
-    const roomsStore = !isolateRooms && options.roomsDbFile ? openRoomsStore(options.roomsDbFile) : undefined;
+    const roomsStore =
+      !isolateRooms && options.roomsDbFile ? openRoomsStore(options.roomsDbFile) : undefined;
     const permanentRoomNames =
-      !isolateRooms && options.permanentRoomsFile ? loadPermanentRoomNames(options.permanentRoomsFile) : undefined;
+      !isolateRooms && options.permanentRoomsFile
+        ? loadPermanentRoomNames(options.permanentRoomsFile)
+        : undefined;
     this.roomsDbFile = !isolateRooms ? (options.roomsDbFile ?? null) : null;
 
     this.roomManager = new RoomManager({ isolateRooms, roomsStore, permanentRoomNames });
-    this.password = options.password ? createHash("md5").update(options.password, "utf8").digest("hex") : null;
+    this.password = options.password
+      ? createHash("md5").update(options.password, "utf8").digest("hex")
+      : null;
     this.log = options.log ?? ((line: string) => console.log(line));
 
     if (options.salt) {
@@ -109,7 +119,9 @@ export class SyncServer {
     } else {
       this.salt = generateServerSalt();
       this.log(`No --salt given; generated random salt for this run: ${this.salt}`);
-      this.log("Managed-room links created now will stop working if the server restarts without this salt.");
+      this.log(
+        "Managed-room links created now will stop working if the server restarts without this salt.",
+      );
     }
 
     this.disableReady = !!options.disableReady;
@@ -122,12 +134,17 @@ export class SyncServer {
 
     this.statsStore = options.statsDbFile ? openStatsStore(options.statsDbFile) : null;
     if (this.statsStore) {
-      this.statsTimer = setInterval(() => this.recordStatsSnapshot(), SERVER_STATS_SNAPSHOT_INTERVAL_MS);
+      this.statsTimer = setInterval(
+        () => this.recordStatsSnapshot(),
+        SERVER_STATS_SNAPSHOT_INTERVAL_MS,
+      );
       this.statsTimer.unref?.();
     }
 
     this.listenHosts = this.resolveListenHosts();
-    this.servers = this.listenHosts.map(() => createServer((socket: Socket) => this.onConnection(socket)));
+    this.servers = this.listenHosts.map(() =>
+      createServer((socket: Socket) => this.onConnection(socket)),
+    );
   }
 
   private loadTlsCredentials(certDir: string | undefined): TlsCredentials | null {
@@ -177,9 +194,9 @@ export class SyncServer {
     if (this.statsTimer) clearInterval(this.statsTimer);
     this.statsStore?.close();
     this.roomManager.close();
-    return Promise.all(this.servers.map((server) => new Promise<void>((resolve) => server.close(() => resolve())))).then(
-      () => undefined,
-    );
+    return Promise.all(
+      this.servers.map((server) => new Promise<void>((resolve) => server.close(() => resolve()))),
+    ).then(() => undefined);
   }
 
   private recordStatsSnapshot(): void {
@@ -214,7 +231,11 @@ export class SyncServer {
    * a confusing/meaningless value to show end users in a templated welcome message.
    */
   renderMotdFor(username: string, room: string, userIp: string, clientVersion: string): string {
-    return renderMotdTemplate(this.motdTemplate, { version: REAL_VERSION, userIp, username, room }, clientVersion);
+    return renderMotdTemplate(
+      this.motdTemplate,
+      { version: REAL_VERSION, userIp, username, room },
+      clientVersion,
+    );
   }
 
   removeWatcher(watcher: Watcher): void {
@@ -291,7 +312,9 @@ export class SyncServer {
     const room = watcher.room;
     if (!(room instanceof ControlledRoom)) return;
     for (const controllerName of room.controllers) {
-      watcher.connection.sendEnvelope({ Set: { controllerAuth: { user: controllerName, room: room.name, success: true } } });
+      watcher.connection.sendEnvelope({
+        Set: { controllerAuth: { user: controllerName, room: room.name, success: true } },
+      });
     }
   }
 
@@ -325,7 +348,9 @@ export class SyncServer {
 
   broadcastPlaylistIndex(room: Room, user: string): void {
     for (const w of room.watchers.values()) {
-      w.connection.sendEnvelope({ Set: { playlistIndex: { user, index: room.playlistIndex ?? 0 } } });
+      w.connection.sendEnvelope({
+        Set: { playlistIndex: { user, index: room.playlistIndex ?? 0 } },
+      });
     }
     this.roomManager.persistRoom(room);
   }

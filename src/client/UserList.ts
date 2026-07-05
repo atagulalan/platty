@@ -86,7 +86,11 @@ export class UserList {
   }
 
   /** Mirrors userlist.areAllUsersInRoomReady(). */
-  areAllUsersInRoomReady(room: string, selfUsername: string, requireSameFilenames = false): boolean {
+  areAllUsersInRoomReady(
+    room: string,
+    selfUsername: string,
+    requireSameFilenames = false,
+  ): boolean {
     const self = this.get(selfUsername);
     if (!self || self.ready !== true) return false;
     for (const u of this.inRoom(room)) {

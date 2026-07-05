@@ -111,7 +111,10 @@ export class SyncplayClient extends EventEmitter {
   private readonly osd: OsdSettings;
   private readonly presenter: PlayerPresenter;
   private readonly sharedPlaylistEnabled: boolean;
-  private readonly trustedDomainOptions: { onlySwitchToTrustedDomains: boolean; trustedDomains: string[] };
+  private readonly trustedDomainOptions: {
+    onlySwitchToTrustedDomains: boolean;
+    trustedDomains: string[];
+  };
 
   private username: string;
   private room: string;
@@ -330,7 +333,10 @@ export class SyncplayClient extends EventEmitter {
       // Mirrors Python's reIdentifyAsController(): if we were a controller before an unplanned
       // drop and still hold the room's control password, re-auth automatically after rejoining.
       if (this.controllerSelf && this.lastControllerAuth) {
-        this.connection.requestControllerAuth(this.lastControllerAuth.room, this.lastControllerAuth.password);
+        this.connection.requestControllerAuth(
+          this.lastControllerAuth.room,
+          this.lastControllerAuth.password,
+        );
       }
 
       this.stateTicker = setInterval(() => this.sendCurrentState(false), 1000);
@@ -360,7 +366,13 @@ export class SyncplayClient extends EventEmitter {
       if (name !== this.username && (isJoin || entry.file)) {
         const user = this.userList.get(name);
         const hideFromPlayer = !this.osdHideForUser(name, roomName, user?.controller ?? false);
-        this.presenter.notifyUserJoined(name, roomName, entry.file ?? null, formatTime, hideFromPlayer);
+        this.presenter.notifyUserJoined(
+          name,
+          roomName,
+          entry.file ?? null,
+          formatTime,
+          hideFromPlayer,
+        );
       }
 
       this.emit("userlistUpdate");
@@ -403,7 +415,8 @@ export class SyncplayClient extends EventEmitter {
     c.on("controllerAuthStatus", (user, _room, success) => {
       if (user === this.username) {
         this.controllerSelf = success;
-        if (success && this.pendingControllerAuth) this.lastControllerAuth = this.pendingControllerAuth;
+        if (success && this.pendingControllerAuth)
+          this.lastControllerAuth = this.pendingControllerAuth;
       }
       this.presenter.notifyControllerAuth(user, this.username, success);
     });
@@ -420,7 +433,11 @@ export class SyncplayClient extends EventEmitter {
     });
 
     c.on("playlistChange", (user, files) => {
-      const restoring = this.playlist.needsRestoring(files, user !== undefined, this.playlistMayNeedRestoring);
+      const restoring = this.playlist.needsRestoring(
+        files,
+        user !== undefined,
+        this.playlistMayNeedRestoring,
+      );
       this.playlistMayNeedRestoring = false;
       if (restoring) {
         c.sendPlaylist(this.playlist.files);
@@ -431,7 +448,11 @@ export class SyncplayClient extends EventEmitter {
 
       const fromRemoteUser = user !== undefined && user !== this.username;
       const fromRoomState = user === undefined;
-      if (this.sharedPlaylistEnabled && (fromRemoteUser || fromRoomState) && this.playlist.index !== null) {
+      if (
+        this.sharedPlaylistEnabled &&
+        (fromRemoteUser || fromRoomState) &&
+        this.playlist.index !== null
+      ) {
         void this.switchToNewPlaylistIndex(this.playlist.index, this.hadFirstPlaylistIndex);
       }
     });
@@ -685,7 +706,10 @@ export class SyncplayClient extends EventEmitter {
     for (const delayMs of [500, 1000, 1500]) {
       this.rewindDoubleCheckTimers.push(
         setTimeout(() => {
-          if (this.lastRewindPosition !== null && this.getPlayerPosition() > this.lastRewindPosition + 5) {
+          if (
+            this.lastRewindPosition !== null &&
+            this.getPlayerPosition() > this.lastRewindPosition + 5
+          ) {
             this.player.setPosition(this.lastRewindPosition + this.userOffset);
           }
         }, delayMs),
@@ -713,13 +737,18 @@ export class SyncplayClient extends EventEmitter {
     if (!this.connection.isConnected) return;
     // client.py getLocalState(): with dontSlowDownWithMe, report the room-authoritative position
     // instead of our own so this client's real position never causes others to slow down for it.
-    const localPosition = this.syncConfig.dontSlowDownWithMe ? this.getGlobalPosition() : this.getPlayerPosition();
+    const localPosition = this.syncConfig.dontSlowDownWithMe
+      ? this.getGlobalPosition()
+      : this.getPlayerPosition();
     const reported = localPosition - this.userOffset;
     this.connection.sendState(reported, this.playerPaused, doSeek, stateChange);
   }
 
   private checkLiveness(): void {
-    if (this.lastGlobalUpdate !== null && Date.now() - this.lastGlobalUpdate > PROTOCOL_TIMEOUT_MS) {
+    if (
+      this.lastGlobalUpdate !== null &&
+      Date.now() - this.lastGlobalUpdate > PROTOCOL_TIMEOUT_MS
+    ) {
       this.emitClientError("server-timeout");
       this.connection.destroy();
     }
@@ -755,7 +784,12 @@ export class SyncplayClient extends EventEmitter {
 
     if (setBy && setBy !== this.username && !wasFirstUpdate) {
       if (doSeek && decision.seekTo !== undefined) {
-        this.presenter.notifySeek(setBy, positionBefore - this.userOffset, decision.seekTo, formatTime);
+        this.presenter.notifySeek(
+          setBy,
+          positionBefore - this.userOffset,
+          decision.seekTo,
+          formatTime,
+        );
       } else if (decision.isRewind) {
         this.presenter.notifyRewind(setBy);
       } else if (decision.isFastForward) {

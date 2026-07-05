@@ -201,7 +201,12 @@ export class ServerConnection {
     room.addWatcher(this.watcher);
     this.logged = true;
 
-    const motd = this.server.renderMotdFor(username, roomName, this.socket.remoteAddress ?? "", this.clientVersion);
+    const motd = this.server.renderMotdFor(
+      username,
+      roomName,
+      this.socket.remoteAddress ?? "",
+      this.clientVersion,
+    );
 
     this.wire.send({
       Hello: {
@@ -239,8 +244,12 @@ export class ServerConnection {
     if (!this.watcher) return;
     if (set.room) this.handleSetRoom(set.room);
     if (set.file) this.handleSetFile(set.file);
-    if (set.controllerAuth) this.handleControllerAuth(set.controllerAuth as { room: string; password: string });
-    if (set.ready) this.handleSetReady(set.ready as { isReady: boolean; manuallyInitiated: boolean; username?: string });
+    if (set.controllerAuth)
+      this.handleControllerAuth(set.controllerAuth as { room: string; password: string });
+    if (set.ready)
+      this.handleSetReady(
+        set.ready as { isReady: boolean; manuallyInitiated: boolean; username?: string },
+      );
     if (set.playlistChange) this.handleSetPlaylist(set.playlistChange as { files: string[] });
     if (set.playlistIndex) this.handleSetPlaylistIndex(set.playlistIndex as { index: number });
     // set.features: intentionally unvalidated no-op, matching the reference server's `# TODO: Check`.
@@ -274,15 +283,25 @@ export class ServerConnection {
     } else {
       // NotControlledRoom: client wants to turn a plain room name into a controlled one.
       const canonical = getControlledRoomName(targetRoomName, req.password, salt);
-      this.wire.send({ Set: { newControlledRoom: { password: req.password, roomName: canonical } } });
+      this.wire.send({
+        Set: { newControlledRoom: { password: req.password, roomName: canonical } },
+      });
     }
   }
 
-  private handleSetReady(req: { isReady: boolean; manuallyInitiated: boolean; username?: string }): void {
+  private handleSetReady(req: {
+    isReady: boolean;
+    manuallyInitiated: boolean;
+    username?: string;
+  }): void {
     if (!this.watcher || this.server.disableReady) return;
     let target = this.watcher;
     let setBy: string | undefined;
-    if (req.username && req.username !== this.watcher.name && this.watcher.room.canControl(this.watcher)) {
+    if (
+      req.username &&
+      req.username !== this.watcher.name &&
+      this.watcher.room.canControl(this.watcher)
+    ) {
       const other = this.watcher.room.watchers.get(req.username);
       if (!other) return;
       target = other;
@@ -304,7 +323,9 @@ export class ServerConnection {
       this.server.broadcastPlaylistChange(room, this.watcher.name);
     } else {
       // Silently revert the sender to the room's authoritative playlist.
-      this.wire.send({ Set: { playlistChange: { user: this.watcher.name, files: room.playlist } } });
+      this.wire.send({
+        Set: { playlistChange: { user: this.watcher.name, files: room.playlist } },
+      });
     }
   }
 
@@ -374,7 +395,11 @@ export class ServerConnection {
           if (meaningfulChange) {
             room.paused = nowPaused;
             room.setBy = this.watcher.name;
-            this.server.forcePositionUpdate(room, this.watcher, { position: compensated, paused: nowPaused, doSeek: !!doSeek });
+            this.server.forcePositionUpdate(room, this.watcher, {
+              position: compensated,
+              paused: nowPaused,
+              doSeek: !!doSeek,
+            });
           }
         } else {
           // Non-controller in a managed room: revert them to the authoritative state.

@@ -123,13 +123,19 @@ export function SplattyApp({
         <Text bold color="cyan">
           Splatty
         </Text>
-        <SetupWizard config={config} onComplete={handleWizardComplete} onCancel={handleWizardCancel} />
+        <SetupWizard
+          config={config}
+          onComplete={handleWizardComplete}
+          onCancel={handleWizardCancel}
+        />
       </Box>
     );
   }
 
   if (view === "settings") {
-    return <SettingsPanel config={config} onSave={handleSettingsSave} onClose={() => setView("main")} />;
+    return (
+      <SettingsPanel config={config} onSave={handleSettingsSave} onClose={() => setView("main")} />
+    );
   }
 
   return (

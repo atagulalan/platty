@@ -29,7 +29,9 @@ export interface ShowMessageOptions {
   duration?: number;
 }
 
-function hasChatOverlay(player: Player): player is Player & { displayChatMessage: (u: string, m: string) => void } {
+function hasChatOverlay(
+  player: Player,
+): player is Player & { displayChatMessage: (u: string, m: string) => void } {
   return typeof (player as { displayChatMessage?: unknown }).displayChatMessage === "function";
 }
 
@@ -81,7 +83,8 @@ export class PlayerPresenter {
     const mood = options.mood ?? "neutral";
     const duration = options.duration ?? OSD_DURATION_S;
 
-    if (osdType === "alert" && !this.settings.showOSDWarnings && !this.autoplayTimerRunning()) return;
+    if (osdType === "alert" && !this.settings.showOSDWarnings && !this.autoplayTimerRunning())
+      return;
     if (!this.settings.showOSD) return;
 
     let combined = message;
@@ -157,13 +160,19 @@ export class PlayerPresenter {
       !hideFromPlayer &&
       this.lastLeftUser
     ) {
-      this.showMessage(formatMessage(getMessage("left-paused-notification"), this.lastLeftUser, user), {
-        hideFromPlayer,
-      });
+      this.showMessage(
+        formatMessage(getMessage("left-paused-notification"), this.lastLeftUser, user),
+        {
+          hideFromPlayer,
+        },
+      );
     } else {
-      this.showMessage(formatMessage(getMessage("pause-notification"), user, formatTime(position)), {
-        hideFromPlayer,
-      });
+      this.showMessage(
+        formatMessage(getMessage("pause-notification"), user, formatTime(position)),
+        {
+          hideFromPlayer,
+        },
+      );
     }
   }
 
@@ -226,7 +235,10 @@ export class PlayerPresenter {
 
   notifyAutoplayCountdown(secondsLeft: number, readyCount: number): void {
     const allReadyMessage = formatMessage(getMessage("all-users-ready"), readyCount);
-    const autoplayingMessage = formatMessage(getMessage("autoplaying-notification"), Math.trunc(secondsLeft));
+    const autoplayingMessage = formatMessage(
+      getMessage("autoplaying-notification"),
+      Math.trunc(secondsLeft),
+    );
     const separator = this.player.osdMessageSeparator ?? "; ";
     this.showOsdMessage(`${allReadyMessage}${separator}${autoplayingMessage}`, {
       duration: 1,
@@ -237,14 +249,24 @@ export class PlayerPresenter {
 
   notifyControllerAuth(username: string, selfUsername: string, success: boolean): void {
     if (!success || username !== selfUsername) return;
-    this.showMessage(formatMessage(getMessage("authenticated-as-controller-notification"), username), {
-      hideFromPlayer: !this.settings.showSameRoomOSD,
-    });
+    this.showMessage(
+      formatMessage(getMessage("authenticated-as-controller-notification"), username),
+      {
+        hideFromPlayer: !this.settings.showSameRoomOSD,
+      },
+    );
   }
 
-  notifyReadyChange(username: string, isReady: boolean, setBy: string | undefined, selfUsername: string): void {
+  notifyReadyChange(
+    username: string,
+    isReady: boolean,
+    setBy: string | undefined,
+    selfUsername: string,
+  ): void {
     if (setBy && setBy !== username) {
-      const key = isReady ? "other-set-as-ready-notification" : "other-set-as-not-ready-notification";
+      const key = isReady
+        ? "other-set-as-ready-notification"
+        : "other-set-as-not-ready-notification";
       this.showMessage(formatMessage(getMessage(key), username, setBy));
       return;
     }

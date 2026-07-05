@@ -69,7 +69,8 @@ export function SettingsPanel({ config, onSave, onClose }: SettingsPanelProps): 
       return;
     }
     if (key.upArrow || input === "k") setSelected((s) => Math.max(0, s - 1));
-    if (key.downArrow || input === "j") setSelected((s) => Math.min(activeFields.length - 1, s + 1));
+    if (key.downArrow || input === "j")
+      setSelected((s) => Math.min(activeFields.length - 1, s + 1));
     if (key.return) {
       const field = activeFields[selected];
       if (!field) return;

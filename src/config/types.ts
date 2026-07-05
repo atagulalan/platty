@@ -111,5 +111,6 @@ export interface ConfigFieldMeta {
   key: ConfigKey;
   section: string;
   label: string;
-  type: "string" | "number" | "boolean" | "string[]" | "record" | "privacy" | "unpause" | "playerKind";
+  type:
+    "string" | "number" | "boolean" | "string[]" | "record" | "privacy" | "unpause" | "playerKind";
 }

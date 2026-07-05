@@ -95,7 +95,16 @@ export function reconnectDelayMs(retries: number): number {
 export const AUTOPLAY_DELAY_S = 3.0;
 export const RECENTLY_ADVANCED_WINDOW_S = AUTOPLAY_DELAY_S + 5;
 /** Mirrors source/syncplay/constants.py MUSIC_FORMATS (all lower case, with leading dot). */
-export const MUSIC_FORMATS = [".mp3", ".m4a", ".m4p", ".wav", ".aiff", ".r", ".ogg", ".flac"] as const;
+export const MUSIC_FORMATS = [
+  ".mp3",
+  ".m4a",
+  ".m4p",
+  ".wav",
+  ".aiff",
+  ".r",
+  ".ogg",
+  ".flac",
+] as const;
 export const FOLDER_SEARCH_DOUBLE_CHECK_INTERVAL_MS = 30_000;
 
 // spec/client/privacy-and-file-matching.md

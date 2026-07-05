@@ -67,7 +67,10 @@ program
   .option("--language <code>", "UI language code (e.g. de, en, tr)")
   .option("--load-playlist-from-file <path>", "seed the playlist from a file, one entry per line")
   .argument("[file]", "media file or URL to open")
-  .argument("[playerArgs...]", "extra arguments passed through to the player (prefix with -- if they start with -)")
+  .argument(
+    "[playerArgs...]",
+    "extra arguments passed through to the player (prefix with -- if they start with -)",
+  )
   .parse(process.argv);
 
 const opts = program.opts();
@@ -139,7 +142,10 @@ if (!showWizard) {
         .filter(Boolean);
       for (const line of lines) client.addToPlaylist(line);
     } catch (err) {
-      client.emit("log", `Could not load playlist from "${opts.loadPlaylistFromFile}": ${String(err)}`);
+      client.emit(
+        "log",
+        `Could not load playlist from "${opts.loadPlaylistFromFile}": ${String(err)}`,
+      );
     }
   }
 }

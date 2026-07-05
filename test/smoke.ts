@@ -18,13 +18,14 @@ function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function waitForEvent<T extends { on(event: string, listener: (...args: never[]) => void): unknown }>(
-  emitter: T,
-  event: string,
-  timeoutMs = 5000,
-): Promise<unknown[]> {
+function waitForEvent<
+  T extends { on(event: string, listener: (...args: never[]) => void): unknown },
+>(emitter: T, event: string, timeoutMs = 5000): Promise<unknown[]> {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`Timed out waiting for '${event}'`)), timeoutMs);
+    const timer = setTimeout(
+      () => reject(new Error(`Timed out waiting for '${event}'`)),
+      timeoutMs,
+    );
     emitter.on(event, (...args: never[]) => {
       clearTimeout(timer);
       resolve(args);
@@ -66,11 +67,18 @@ async function main(): Promise<void> {
 
   // --- Hello username collision resolution -------------------------------------------------
   const clientA2Player = new NullPlayer();
-  const clientA2 = new SyncplayClient({ host: "127.0.0.1", port: PORT, username: "Alice", room: "TestRoom" }, clientA2Player);
+  const clientA2 = new SyncplayClient(
+    { host: "127.0.0.1", port: PORT, username: "Alice", room: "TestRoom" },
+    clientA2Player,
+  );
   const a2Connected = waitForEvent(clientA2, "connected");
   await clientA2.start();
   await a2Connected;
-  assert.strictEqual(clientA2.selfUsername, "Alice_", "server should rename colliding username to Alice_");
+  assert.strictEqual(
+    clientA2.selfUsername,
+    "Alice_",
+    "server should rename colliding username to Alice_",
+  );
   log("PASS: server-side username collision resolution (Alice -> Alice_)");
   clientA2.stop();
 
@@ -98,7 +106,11 @@ async function main(): Promise<void> {
   // NullPlayer's ticker emits a 'status' event every 250ms regardless of pause state, so the
   // next tick reflects whatever the sync algorithm has already applied to playerB by now.
   const bobStatus = (await waitForEvent(playerB, "status")) as [{ paused: boolean }];
-  assert.strictEqual(bobStatus[0].paused, false, "Bob's player should have been unpaused by the sync algorithm");
+  assert.strictEqual(
+    bobStatus[0].paused,
+    false,
+    "Bob's player should have been unpaused by the sync algorithm",
+  );
   log("PASS: unpause propagated Alice -> Bob via State + sync algorithm");
 
   // --- Playlist -------------------------------------------------------------------------------
@@ -137,7 +149,11 @@ async function main(): Promise<void> {
   await clientB3.start();
   await waitForEvent(clientB3, "connected");
   const daveFile = (await b3FileInfo) as [PlayerFileInfo];
-  assert.strictEqual(daveFile[0].name, "shared.mkv", "Dave should auto-open shared.mkv from media dir on join");
+  assert.strictEqual(
+    daveFile[0].name,
+    "shared.mkv",
+    "Dave should auto-open shared.mkv from media dir on join",
+  );
   log("PASS: auto file switch on room join via shared playlist index");
 
   clientA3.stop();

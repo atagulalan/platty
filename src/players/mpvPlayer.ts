@@ -80,7 +80,9 @@ export class MpvPlayer extends EventEmitter implements Player {
   }
 
   private socketPath(pid: number): string {
-    return platform === "win32" ? `\\\\.\\pipe\\syncplay-ts-mpv-${pid}` : `${tmpdir()}/syncplay-ts-mpv-${pid}.sock`;
+    return platform === "win32"
+      ? `\\\\.\\pipe\\syncplay-ts-mpv-${pid}`
+      : `${tmpdir()}/syncplay-ts-mpv-${pid}.sock`;
   }
 
   private checkMinimumVersion(): Promise<{ oscVisibilityChangeCompatible: boolean }> {
@@ -190,7 +192,10 @@ export class MpvPlayer extends EventEmitter implements Player {
             reject(new Error(`Could not connect to mpv IPC socket at ${path}`));
             return;
           }
-          setTimeout(() => this.connectWithRetry(path, attemptsLeft - 1).then(resolve, reject), 100);
+          setTimeout(
+            () => this.connectWithRetry(path, attemptsLeft - 1).then(resolve, reject),
+            100,
+          );
         });
       };
       attempt();
@@ -305,7 +310,9 @@ export class MpvPlayer extends EventEmitter implements Player {
     const messageString = sanitizeMpvOsdText(text.replace(/\\n/g, "<NEWLINE>"))
       .replace(/\\\\/g, MPV_INPUT_BACKSLASH_SUBSTITUTE_CHARACTER)
       .replace(/<NEWLINE>/g, "\\n");
-    void this.request(["script-message-to", "syncplayintf", messageName, messageString]).catch(() => {});
+    void this.request(["script-message-to", "syncplayintf", messageName, messageString]).catch(
+      () => {},
+    );
   }
 
   async applySyncplayIntfOptions(): Promise<void> {
@@ -315,9 +322,12 @@ export class MpvPlayer extends EventEmitter implements Player {
       ...cfg,
       oscVisibilityChangeCompatible: this.oscVisibilityChangeCompatible,
     });
-    await this.request(["script-message-to", "syncplayintf", "set_syncplayintf_options", optionsString]).catch(
-      () => {},
-    );
+    await this.request([
+      "script-message-to",
+      "syncplayintf",
+      "set_syncplayintf_options",
+      optionsString,
+    ]).catch(() => {});
     this.applyOsdPosition(cfg);
   }
 
@@ -349,7 +359,10 @@ export class MpvPlayer extends EventEmitter implements Player {
 
     if (!cfg?.chatOutputEnabled) {
       const durationMs = Math.round((options.duration ?? 3) * 1000);
-      const sanitized = sanitizeMpvOsdText(text.replace(/\\n/g, "<NEWLINE>")).replace(/<NEWLINE>/g, "\\n");
+      const sanitized = sanitizeMpvOsdText(text.replace(/\\n/g, "<NEWLINE>")).replace(
+        /<NEWLINE>/g,
+        "\\n",
+      );
       void this.request(["show-text", sanitized, durationMs, 1]).catch(() => {});
       return;
     }
@@ -359,8 +372,12 @@ export class MpvPlayer extends EventEmitter implements Player {
 
   displayChatMessage(username: string, message: string): void {
     const cfg = this.options.syncplayIntf;
-    const safeUser = sanitizeMpvOsdText(username.replace(/\\/g, MPV_INPUT_BACKSLASH_SUBSTITUTE_CHARACTER));
-    const safeMessage = sanitizeMpvOsdText(message.replace(/\\/g, MPV_INPUT_BACKSLASH_SUBSTITUTE_CHARACTER));
+    const safeUser = sanitizeMpvOsdText(
+      username.replace(/\\/g, MPV_INPUT_BACKSLASH_SUBSTITUTE_CHARACTER),
+    );
+    const safeMessage = sanitizeMpvOsdText(
+      message.replace(/\\/g, MPV_INPUT_BACKSLASH_SUBSTITUTE_CHARACTER),
+    );
     const line = `<${safeUser}> ${safeMessage}`;
 
     if (!cfg?.chatOutputEnabled) {

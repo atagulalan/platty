@@ -58,7 +58,9 @@ try {
       `${root}/Movies/foo.mkv`,
       `${root}/Movies/foo.srt`,
     ]);
-    console.log("completion.test.ts: PASS fileCompleter lists directory contents on trailing slash");
+    console.log(
+      "completion.test.ts: PASS fileCompleter lists directory contents on trailing slash",
+    );
   }
 
   // Basename prefix filter within a directory.
@@ -100,7 +102,7 @@ try {
   // Chat escape ("//text") never triggers command completion.
   const result = getCompletions({ line: "//pa", cursor: 4 }, baseCtx());
   assert.deepStrictEqual(result.suggestions, []);
-  console.log("completion.test.ts: PASS \"//\" chat escape yields no command completions");
+  console.log('completion.test.ts: PASS "//" chat escape yields no command completions');
 }
 
 // --- getCompletions: /set key completion ---
@@ -124,7 +126,9 @@ try {
 // --- getCompletions: /sr, /snr username completion ---
 
 {
-  const ctx = baseCtx({ users: [user("alice", "lobby"), user("alicia", "lobby"), user("bob", "lobby")] });
+  const ctx = baseCtx({
+    users: [user("alice", "lobby"), user("alicia", "lobby"), user("bob", "lobby")],
+  });
   const result = getCompletions({ line: "/sr al", cursor: 6 }, ctx);
   assert.deepStrictEqual(result.suggestions, ["alice", "alicia"]);
   console.log("completion.test.ts: PASS /sr completes usernames");

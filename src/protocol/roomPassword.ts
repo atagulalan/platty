@@ -21,7 +21,9 @@ export function isControlledRoomName(roomName: string): boolean {
   return CONTROLLED_ROOM_REGEX.test(roomName);
 }
 
-export function parseControlledRoomName(roomName: string): { baseName: string; hash: string } | null {
+export function parseControlledRoomName(
+  roomName: string,
+): { baseName: string; hash: string } | null {
   const m = CONTROLLED_ROOM_REGEX.exec(roomName);
   if (!m) return null;
   return { baseName: m[1]!, hash: m[2]! };
@@ -35,7 +37,9 @@ export function isValidControlPassword(password: string): boolean {
 export function computeRoomHash(baseName: string, password: string, salt: string): string {
   const saltHashed = sha256hex(salt);
   const provisional = sha256hex(baseName + saltHashed);
-  return sha1hex(provisional + saltHashed + password).slice(0, 12).toUpperCase();
+  return sha1hex(provisional + saltHashed + password)
+    .slice(0, 12)
+    .toUpperCase();
 }
 
 export function getControlledRoomName(baseName: string, password: string, salt: string): string {

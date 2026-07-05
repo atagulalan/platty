@@ -11,11 +11,25 @@ import { LineProtocol } from "../protocol/wire.js";
 import { PingService } from "../protocol/pingService.js";
 import { ProtocolError } from "../protocol/errors.js";
 import { CONNECT_TIMEOUT_MS, LINE_DELIMITER, MAX_LINE_LENGTH } from "../protocol/constants.js";
-import { outgoingHelloVersion, outgoingRealVersion, resolvePeerVersion, inferFeatures, type FeatureFlags } from "../protocol/version.js";
-import type { Envelope, FileInfo, PingBlock, IgnoringOnTheFly, SetUserEntry } from "../protocol/types.js";
+import {
+  outgoingHelloVersion,
+  outgoingRealVersion,
+  resolvePeerVersion,
+  inferFeatures,
+  type FeatureFlags,
+} from "../protocol/version.js";
+import type {
+  Envelope,
+  FileInfo,
+  PingBlock,
+  IgnoringOnTheFly,
+  SetUserEntry,
+} from "../protocol/types.js";
 
 export interface ClientConnectionEvents {
-  hello: [{ username: string; room: string; motd: string; features: FeatureFlags; serverVersion: string }];
+  hello: [
+    { username: string; room: string; motd: string; features: FeatureFlags; serverVersion: string },
+  ];
   userEvent: [string, SetUserEntry];
   list: [Envelope["List"]];
   state: [
@@ -91,7 +105,9 @@ export class ClientConnection extends EventEmitter {
 
       const connectTimeout = setTimeout(() => {
         socket.destroy();
-        const err = new Error(`Connection to ${host}:${port} timed out after ${CONNECT_TIMEOUT_MS}ms`);
+        const err = new Error(
+          `Connection to ${host}:${port} timed out after ${CONNECT_TIMEOUT_MS}ms`,
+        );
         finish(() => reject(err));
       }, CONNECT_TIMEOUT_MS);
 
@@ -288,13 +304,27 @@ export class ClientConnection extends EventEmitter {
       for (const [name, entry] of Object.entries(set.user)) this.emit("userEvent", name, entry);
     }
     if (set.controllerAuth && "success" in set.controllerAuth) {
-      this.emit("controllerAuthStatus", set.controllerAuth.user, set.controllerAuth.room, set.controllerAuth.success);
+      this.emit(
+        "controllerAuthStatus",
+        set.controllerAuth.user,
+        set.controllerAuth.room,
+        set.controllerAuth.success,
+      );
     }
     if (set.newControlledRoom) {
-      this.emit("newControlledRoom", set.newControlledRoom.password, set.newControlledRoom.roomName);
+      this.emit(
+        "newControlledRoom",
+        set.newControlledRoom.password,
+        set.newControlledRoom.roomName,
+      );
     }
     if (set.ready && "username" in set.ready) {
-      const ready = set.ready as { username: string; isReady: boolean; manuallyInitiated: boolean; setBy?: string };
+      const ready = set.ready as {
+        username: string;
+        isReady: boolean;
+        manuallyInitiated: boolean;
+        setBy?: string;
+      };
       this.emit("readyUpdate", ready.username, ready.isReady, ready.manuallyInitiated, ready.setBy);
     }
     if (set.playlistChange) {
@@ -369,7 +399,9 @@ export class ClientConnection extends EventEmitter {
     this.wire?.send({
       State: {
         ping,
-        ...(includePlaystate ? { playstate: { position, paused, ...(doSeek ? { doSeek } : {}) } } : {}),
+        ...(includePlaystate
+          ? { playstate: { position, paused, ...(doSeek ? { doSeek } : {}) } }
+          : {}),
         ...(Object.keys(ignoringOnTheFly).length ? { ignoringOnTheFly } : {}),
       },
     });
@@ -385,7 +417,9 @@ export class ClientConnection extends EventEmitter {
   }
 
   sendReady(isReady: boolean, manuallyInitiated: boolean, username?: string): void {
-    this.wire?.send({ Set: { ready: { isReady, manuallyInitiated, ...(username ? { username } : {}) } } });
+    this.wire?.send({
+      Set: { ready: { isReady, manuallyInitiated, ...(username ? { username } : {}) } },
+    });
   }
 
   sendPlaylist(files: string[]): void {
@@ -420,6 +454,12 @@ function stripUndefined<T extends object>(obj: T): Partial<T> {
 }
 
 export declare interface ClientConnection {
-  on<K extends keyof ClientConnectionEvents>(event: K, listener: (...args: ClientConnectionEvents[K]) => void): this;
-  emit<K extends keyof ClientConnectionEvents>(event: K, ...args: ClientConnectionEvents[K]): boolean;
+  on<K extends keyof ClientConnectionEvents>(
+    event: K,
+    listener: (...args: ClientConnectionEvents[K]) => void,
+  ): this;
+  emit<K extends keyof ClientConnectionEvents>(
+    event: K,
+    ...args: ClientConnectionEvents[K]
+  ): boolean;
 }

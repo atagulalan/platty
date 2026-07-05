@@ -121,7 +121,10 @@ export function SetupWizard({ config, onComplete, onCancel }: SetupWizardProps):
       <Text bold color="cyan">
         Splatty Setup ({stepIndex + 1}/{STEPS.length})
       </Text>
-      <Text dimColor>{step.optional ? "(optional) " : ""}{step.hint}</Text>
+      <Text dimColor>
+        {step.optional ? "(optional) " : ""}
+        {step.hint}
+      </Text>
       <Box marginTop={1}>
         <Text color="yellow">{step.label}: </Text>
         <TextInput

@@ -42,7 +42,15 @@ function parseBoolean(raw: string): boolean | null {
   return null;
 }
 
-const CONNECTION_KEYS: ConfigKey[] = ["name", "host", "port", "password", "room", "playerPath", "playerKind"];
+const CONNECTION_KEYS: ConfigKey[] = [
+  "name",
+  "host",
+  "port",
+  "password",
+  "room",
+  "playerPath",
+  "playerKind",
+];
 
 export function setConfigValue(config: SplattyConfig, rawKey: string, rawValue: string): SetResult {
   const key = CONFIG_ALIASES[rawKey.toLowerCase()];
@@ -61,7 +69,8 @@ export function setConfigValue(config: SplattyConfig, rawKey: string, rawValue: 
   switch (meta?.type ?? typeof prev) {
     case "number":
       next = Number(rawValue);
-      if (!Number.isFinite(next as number)) return { ok: false, message: `"${rawKey}" must be a number.` };
+      if (!Number.isFinite(next as number))
+        return { ok: false, message: `"${rawKey}" must be a number.` };
       break;
     case "boolean": {
       const b = parseBoolean(rawValue);
@@ -90,8 +99,18 @@ export function setConfigValue(config: SplattyConfig, rawKey: string, rawValue: 
       break;
     case "playerKind": {
       const k = rawValue.toLowerCase();
-      if (k !== "mpv" && k !== "vlc" && k !== "null" && k !== "mpvnet" && k !== "iina" && k !== "memento") {
-        return { ok: false, message: `"${rawKey}" must be one of: mpv, vlc, null, mpvnet, iina, memento.` };
+      if (
+        k !== "mpv" &&
+        k !== "vlc" &&
+        k !== "null" &&
+        k !== "mpvnet" &&
+        k !== "iina" &&
+        k !== "memento"
+      ) {
+        return {
+          ok: false,
+          message: `"${rawKey}" must be one of: mpv, vlc, null, mpvnet, iina, memento.`,
+        };
       }
       next = k as PlayerKind;
       if (k === "null") config.playerPath = "";

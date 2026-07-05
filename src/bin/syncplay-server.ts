@@ -20,13 +20,22 @@ program
   .option("--max-chat-message-length <n>", "chat truncation limit", (v) => Number(v))
   .option("--max-username-length <n>", "username truncation limit", (v) => Number(v))
   .option("--rooms-db-file <path>", "persist room playlists/index across restarts")
-  .option("--permanent-rooms-file <path>", "newline-delimited room names that are never deleted when empty")
+  .option(
+    "--permanent-rooms-file <path>",
+    "newline-delimited room names that are never deleted when empty",
+  )
   .option("--stats-db-file <path>", "record hourly connection-count/version-histogram snapshots")
   .option("--tls <cert-dir>", "directory containing cert.pem/key.pem; enables in-band STARTTLS")
   .option("--ipv4-only", "only bind an IPv4 listener", false)
   .option("--ipv6-only", "only bind an IPv6 listener", false)
-  .option("--interface-ipv4 <addr>", "explicit IPv4 bind address (implies dual-stack if --interface-ipv6 also given)")
-  .option("--interface-ipv6 <addr>", "explicit IPv6 bind address (implies dual-stack if --interface-ipv4 also given)")
+  .option(
+    "--interface-ipv4 <addr>",
+    "explicit IPv4 bind address (implies dual-stack if --interface-ipv6 also given)",
+  )
+  .option(
+    "--interface-ipv6 <addr>",
+    "explicit IPv6 bind address (implies dual-stack if --interface-ipv4 also given)",
+  )
   .parse(process.argv);
 
 const opts = program.opts();

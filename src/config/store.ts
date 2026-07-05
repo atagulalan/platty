@@ -169,7 +169,10 @@ function iniToPartial(parsed: Record<string, Record<string, string>>): Partial<S
   return out as Partial<SplattyConfig>;
 }
 
-function iniToConfig(parsed: Record<string, Record<string, string>>, base: SplattyConfig): SplattyConfig {
+function iniToConfig(
+  parsed: Record<string, Record<string, string>>,
+  base: SplattyConfig,
+): SplattyConfig {
   return { ...base, ...iniToPartial(parsed) };
 }
 

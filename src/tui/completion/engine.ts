@@ -25,7 +25,9 @@ function startsWithCaseInsensitive(value: string, prefix: string): boolean {
 }
 
 function completeCommandName(partial: string, powerUserMode: boolean): string[] {
-  const names = COMMAND_REGISTRY.filter((c) => powerUserMode || c.tier === "basic").flatMap((c) => c.aliases);
+  const names = COMMAND_REGISTRY.filter((c) => powerUserMode || c.tier === "basic").flatMap(
+    (c) => c.aliases,
+  );
   const matches = [...new Set(names)]
     .filter((name) => name.startsWith(partial.toLowerCase()))
     .sort();
@@ -72,7 +74,10 @@ function completeRoom(arg: string, users: UserInfo[]): string[] {
 }
 
 /** Compute completions for the current input line, given the cursor position and live client state. */
-export function getCompletions(request: CompletionRequest, ctx: CompletionEngineContext): CompletionResult {
+export function getCompletions(
+  request: CompletionRequest,
+  ctx: CompletionEngineContext,
+): CompletionResult {
   const cursor = Math.max(0, Math.min(request.cursor, request.line.length));
   const head = request.line.slice(0, cursor);
 
