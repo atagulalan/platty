@@ -1,10 +1,10 @@
 {
-  "name": "platty",
+  "name": "splatty",
   "version": "0.1.0",
   "description": "Platty — Syncplay-compatible watch-together client with a terminal (Ink) GUI",
   "type": "module",
   "bin": {
-    "platty": "dist/bin/platty-client.js"
+    "splatty": "dist/bin/platty-client.js"
   },
   "files": [
     "dist",

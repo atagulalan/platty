@@ -16,7 +16,7 @@ export const PUBLIC_SYNCPLAY_PORTS = [8998, 8996, 8995, 8997, 8999] as const;
 export function nextPublicSyncplayPort(current: number): number | null {
   const ports = PUBLIC_SYNCPLAY_PORTS;
   const idx = ports.indexOf(current as (typeof ports)[number]);
-  const next = ports[(idx + 1) % ports.length];
+  const next = ports[(idx + 1) % ports.length]!;
   return next === current ? null : next;
 }
 
