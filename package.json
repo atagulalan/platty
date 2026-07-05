@@ -1,0 +1,29 @@
+{
+  "name": "platty",
+  "version": "0.1.0",
+  "description": "Platty — Syncplay-compatible watch-together client with a terminal (Ink) GUI",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "server": "tsx src/bin/syncplay-server.ts",
+    "client": "tsx src/bin/platty-client.tsx",
+    "platty": "tsx src/bin/platty-client.tsx",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "test": "tsx test/roomManager.test.ts && tsx test/commandRegistry.test.ts && tsx test/completion.test.ts && tsx test/autoplay.test.ts && tsx test/smoke.ts"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "ink": "^5.0.1",
+    "ink-text-input": "^6.0.0",
+    "ini": "^4.1.3",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/ini": "^4.1.1",
+    "@types/node": "^22.7.4",
+    "@types/react": "^18.3.11",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
+}

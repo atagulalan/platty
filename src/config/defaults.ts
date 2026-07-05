@@ -1,0 +1,96 @@
+import {
+  DEFAULT_CLIENT_HOST,
+  DEFAULT_CLIENT_PORT,
+  DEFAULT_FASTFORWARD_THRESHOLD_S,
+  DEFAULT_REWIND_THRESHOLD_S,
+  DEFAULT_SLOWDOWN_KICKIN_THRESHOLD_S,
+  PRIVACY_SENDRAW,
+} from "../protocol/constants.js";
+import type { PlattyConfig } from "./types.js";
+
+export const DEFAULT_TRUSTED_DOMAINS = ["youtube.com", "youtu.be"];
+
+export function defaultConfig(name?: string): PlattyConfig {
+  return {
+    host: DEFAULT_CLIENT_HOST,
+    port: DEFAULT_CLIENT_PORT,
+    password: "",
+
+    name: name ?? "",
+    room: "default",
+    roomList: [],
+    playerPath: "mpv",
+    perPlayerArguments: {},
+    mediaSearchDirectories: [],
+
+    slowdownThreshold: DEFAULT_SLOWDOWN_KICKIN_THRESHOLD_S,
+    rewindThreshold: DEFAULT_REWIND_THRESHOLD_S,
+    fastforwardThreshold: DEFAULT_FASTFORWARD_THRESHOLD_S,
+    folderSearchFirstFileTimeout: 25,
+    folderSearchTimeout: 20,
+    folderSearchDoubleCheckInterval: 30,
+    folderSearchWarningThreshold: 2,
+    slowOnDesync: true,
+    rewindOnDesync: true,
+    fastforwardOnDesync: true,
+    dontSlowDownWithMe: false,
+
+    filenamePrivacyMode: PRIVACY_SENDRAW,
+    filesizePrivacyMode: PRIVACY_SENDRAW,
+
+    forceGuiPrompt: false,
+    pauseOnLeave: false,
+    readyAtStart: false,
+    unpauseAction: "IfOthersReady",
+    autoplayInitialState: null,
+    autoplayMinUsers: -1,
+    autoplayRequireSameFilenames: true,
+
+    sharedPlaylistEnabled: true,
+    loopAtEndOfPlaylist: false,
+    loopSingleFiles: false,
+    onlySwitchToTrustedDomains: true,
+    autosaveJoinsToList: true,
+    trustedDomains: [...DEFAULT_TRUSTED_DOMAINS],
+    publicServers: [],
+
+    showOSD: true,
+    showOSDWarnings: true,
+    showSlowdownOSD: true,
+    showDifferentRoomOSD: false,
+    showSameRoomOSD: true,
+    showNonControllerOSD: false,
+    showContactInfo: true,
+    showDurationNotification: true,
+    chatInputEnabled: true,
+    chatInputFontFamily: "sans-serif",
+    chatInputRelativeFontSize: 24,
+    chatInputFontWeight: 1,
+    chatInputFontUnderline: false,
+    chatInputFontColor: "#FFFF00",
+    chatInputPosition: "Top",
+    chatDirectInput: false,
+    chatOutputEnabled: true,
+    chatOutputFontFamily: "sans-serif",
+    chatOutputRelativeFontSize: 24,
+    chatOutputFontWeight: 1,
+    chatOutputFontUnderline: false,
+    chatOutputMode: "Chatroom",
+    chatMaxLines: 7,
+    chatTopMargin: 25,
+    chatLeftMargin: 20,
+    chatBottomMargin: 30,
+    chatMoveOSD: true,
+    chatOSDMargin: 110,
+    notificationTimeout: 3,
+    alertTimeout: 5,
+    chatTimeout: 7,
+
+    language: "",
+    checkForUpdatesAutomatically: null,
+    lastCheckedForUpdates: "",
+
+    playerKind: "mpv",
+    setupComplete: false,
+  };
+}
