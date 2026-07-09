@@ -13,6 +13,7 @@ import { SplattyApp, createClient } from "../tui/SplattyApp.js";
 import type { SyncplayClient } from "../client/SyncplayClient.js";
 import { createPlayer, type PlayerKind } from "../players/playerFactory.js";
 import { NullPlayer } from "../players/NullPlayer.js";
+import { checkPlayerAvailable } from "../players/checkPlayerAvailable.js";
 import { DEFAULT_CLIENT_HOST, DEFAULT_CLIENT_PORT } from "../protocol/constants.js";
 import {
   loadConfig,
@@ -118,7 +119,15 @@ if (file && !isURL(file)) {
 if (!config.name) config.name = defaultUsername();
 
 if (opts.setup) config.setupComplete = false;
-const showWizard = needsSetup(config) || opts.setup || config.forceGuiPrompt;
+let showWizard = needsSetup(config) || opts.setup || config.forceGuiPrompt;
+let playerStartupError: string | undefined;
+if (!showWizard) {
+  const availability = await checkPlayerAvailable(config.playerKind, config.playerPath);
+  if (!availability.ok) {
+    playerStartupError = availability.message;
+    showWizard = true;
+  }
+}
 
 function makePlayer(cfg: SplattyConfig): Player {
   const kind = cfg.playerKind ?? (opts.player as PlayerKind) ?? "mpv";
@@ -126,27 +135,23 @@ function makePlayer(cfg: SplattyConfig): Player {
   return createPlayer(kind, path, cfg);
 }
 
-// During first-run setup, use a headless stub — don't spawn mpv/VLC until the wizard finishes.
+// During first-run setup (or missing player), use a headless stub until the wizard finishes.
 const player: Player = showWizard ? new NullPlayer() : makePlayer(config);
 const client = createClient(config, player);
+const autoStart = !showWizard;
 
-if (!showWizard) {
-  void player.open(file ?? "");
-  void client.start();
-
-  if (opts.loadPlaylistFromFile) {
-    try {
-      const lines = readFileSync(opts.loadPlaylistFromFile, "utf8")
-        .split(/\r?\n/)
-        .map((line) => line.trim())
-        .filter(Boolean);
-      for (const line of lines) client.addToPlaylist(line);
-    } catch (err) {
-      client.emit(
-        "log",
-        `Could not load playlist from "${opts.loadPlaylistFromFile}": ${String(err)}`,
-      );
-    }
+if (autoStart && opts.loadPlaylistFromFile) {
+  try {
+    const lines = readFileSync(opts.loadPlaylistFromFile, "utf8")
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    for (const line of lines) client.addToPlaylist(line);
+  } catch (err) {
+    client.emit(
+      "log",
+      `Could not load playlist from "${opts.loadPlaylistFromFile}": ${String(err)}`,
+    );
   }
 }
 
@@ -184,6 +189,8 @@ const { unmount, waitUntilExit } = render(
     registerActiveClient={registerActiveClient}
     noStore={opts.store === false}
     debug={!!opts.debug}
+    playerStartupError={playerStartupError}
+    autoStart={autoStart}
   />,
 );
 unmountInk = unmount;

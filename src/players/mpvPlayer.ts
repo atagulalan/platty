@@ -85,10 +85,34 @@ export class MpvPlayer extends EventEmitter implements Player {
       : `${tmpdir()}/syncplay-ts-mpv-${pid}.sock`;
   }
 
+  private formatSpawnError(err: NodeJS.ErrnoException): Error {
+    if (err.code === "ENOENT") {
+      return new Error(
+        `Could not find mpv at "${this.mpvPath}". Install mpv and add it to your PATH, or set playerPath in ~/.config/splatty/splatty.ini.`,
+      );
+    }
+    return err;
+  }
+
+  private waitForSpawn(proc: ChildProcessWithoutNullStreams): Promise<void> {
+    return new Promise((resolve, reject) => {
+      proc.once("spawn", () => resolve());
+      proc.once("error", (err) => reject(this.formatSpawnError(err)));
+    });
+  }
+
   private checkMinimumVersion(): Promise<{ oscVisibilityChangeCompatible: boolean }> {
     return new Promise((resolve, reject) => {
       execFile(this.mpvPath, ["--version"], (err, stdout) => {
-        if (err || !stdout) {
+        if (err) {
+          if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+            reject(this.formatSpawnError(err as NodeJS.ErrnoException));
+            return;
+          }
+          resolve({ oscVisibilityChangeCompatible: false });
+          return;
+        }
+        if (!stdout) {
           resolve({ oscVisibilityChangeCompatible: false });
           return;
         }
@@ -127,6 +151,7 @@ export class MpvPlayer extends EventEmitter implements Player {
 
     const scriptPath = syncplayIntfScriptPath();
     const scriptFlag = `--${this.options.scriptArgName ?? "script"}=${scriptPath}`;
+    const ipcPath = this.socketPath(process.pid);
 
     const proc = spawn(
       this.mpvPath,
@@ -137,7 +162,7 @@ export class MpvPlayer extends EventEmitter implements Player {
         "--hr-seek=always",
         "--keep-open-pause=yes",
         "--input-terminal=no",
-        `--input-ipc-server=${this.socketPath(process.pid)}`,
+        `--input-ipc-server=${ipcPath}`,
         scriptFlag,
         ...(this.options.extraArgs ?? []),
       ],
@@ -156,7 +181,7 @@ export class MpvPlayer extends EventEmitter implements Player {
     proc.on("error", (err) => this.emit("error", err));
 
     try {
-      const versionInfo = await versionCheck;
+      const [versionInfo] = await Promise.all([versionCheck, this.waitForSpawn(proc)]);
       this.oscVisibilityChangeCompatible = versionInfo.oscVisibilityChangeCompatible;
     } catch (err) {
       proc.kill();
@@ -164,7 +189,7 @@ export class MpvPlayer extends EventEmitter implements Player {
       throw err;
     }
 
-    await this.connectWithRetry(this.socketPath(process.pid));
+    await this.connectWithRetry(ipcPath);
     await this.request(["observe_property", PROP_PAUSE, "pause"]);
     await this.request(["observe_property", PROP_TIME_POS, "time-pos"]);
     await this.request(["observe_property", PROP_DURATION, "duration"]);

@@ -3,11 +3,15 @@ import { Box, Text, useInput } from "ink";
 import TextInput from "ink-text-input";
 import type { SplattyConfig } from "../config/types.js";
 import { DEFAULT_CLIENT_PORT } from "../protocol/constants.js";
+import { checkPlayerAvailable, isPlayerFilesystemPath } from "../players/checkPlayerAvailable.js";
 
 export interface SetupWizardProps {
   config: SplattyConfig;
   onComplete: (config: SplattyConfig) => void;
   onCancel?: () => void;
+  initialError?: string;
+  /** Jump to this step on open (e.g. when startup detects a missing player). */
+  initialStepKey?: keyof SplattyConfig;
 }
 
 interface Step {
@@ -15,6 +19,7 @@ interface Step {
   label: string;
   hint: string;
   optional?: boolean;
+  skip?: (config: SplattyConfig) => boolean;
   parse?: (raw: string, config: SplattyConfig) => Partial<SplattyConfig>;
 }
 
@@ -61,9 +66,15 @@ const STEPS: Step[] = [
   {
     key: "playerKind",
     label: "Player",
-    hint: "mpv, vlc, or null (no player)",
+    hint: "mpv, vlc, null — or paste the full path to the player executable",
     parse: (raw, config) => {
-      const kind = raw.toLowerCase() as SplattyConfig["playerKind"];
+      const trimmed = raw.trim();
+      if (isPlayerFilesystemPath(trimmed)) {
+        const lower = trimmed.toLowerCase();
+        const playerKind: SplattyConfig["playerKind"] = lower.includes("vlc") ? "vlc" : "mpv";
+        return { playerKind, playerPath: trimmed };
+      }
+      const kind = trimmed.toLowerCase() as SplattyConfig["playerKind"];
       const playerKind = kind === "vlc" || kind === "null" ? kind : "mpv";
       return {
         playerKind,
@@ -71,28 +82,63 @@ const STEPS: Step[] = [
       };
     },
   },
+  {
+    key: "playerPath",
+    label: "Player path",
+    hint: "Executable path or command on PATH (Enter for default)",
+    optional: true,
+    skip: (config) =>
+      config.playerKind === "null" || isPlayerFilesystemPath(config.playerPath),
+    parse: (raw, config) => ({
+      playerPath: raw.trim() || config.playerKind,
+    }),
+  },
 ];
 
 function getStepValue(config: SplattyConfig, step: Step): string {
   const v = config[step.key as keyof SplattyConfig];
+  if (step.key === "playerPath" && config.playerKind !== "null" && v === config.playerKind) {
+    return "";
+  }
   if (Array.isArray(v)) return v.join(", ");
   if (typeof v === "number") return String(v);
   return String(v ?? "");
 }
 
-export function SetupWizard({ config, onComplete, onCancel }: SetupWizardProps): React.JSX.Element {
-  const [draft, setDraft] = useState<SplattyConfig>({ ...config });
-  const [stepIndex, setStepIndex] = useState(0);
-  const [value, setValue] = useState(getStepValue(draft, STEPS[0]!));
+function nextStepIndex(from: number, config: SplattyConfig): number {
+  let i = from + 1;
+  while (i < STEPS.length && STEPS[i]?.skip?.(config)) i++;
+  return i;
+}
 
-  const step = STEPS[stepIndex]!;
-  const isLast = stepIndex === STEPS.length - 1;
+export function SetupWizard({
+  config,
+  onComplete,
+  onCancel,
+  initialError,
+  initialStepKey,
+}: SetupWizardProps): React.JSX.Element {
+  const initialStepIndex = initialStepKey
+    ? Math.max(
+        0,
+        STEPS.findIndex((step) => step.key === initialStepKey),
+      )
+    : 0;
+  const [draft, setDraft] = useState<SplattyConfig>({ ...config });
+  const [stepIndex, setStepIndex] = useState(initialStepIndex);
+  const [value, setValue] = useState(getStepValue(draft, STEPS[initialStepIndex]!));
+  const [error, setError] = useState(initialError ?? "");
+  const [checking, setChecking] = useState(false);
+
+  const step = STEPS[stepIndex];
 
   useInput((_input, key) => {
+    if (checking) return;
     if (key.escape && onCancel) onCancel();
   });
 
   const advance = (raw: string): void => {
+    if (checking || !step) return;
     const trimmed = raw.trim();
     if (!trimmed && !step.optional) return;
 
@@ -106,15 +152,40 @@ export function SetupWizard({ config, onComplete, onCancel }: SetupWizardProps):
     const next = { ...draft, ...patch };
     setDraft(next);
 
-    if (isLast) {
-      onComplete({ ...next, setupComplete: true, forceGuiPrompt: false });
-      return;
-    }
+    void (async () => {
+      const nextIndex = nextStepIndex(stepIndex, next);
+      const atEnd = nextIndex >= STEPS.length;
 
-    const nextStep = STEPS[stepIndex + 1]!;
-    setStepIndex(stepIndex + 1);
-    setValue(getStepValue(next, nextStep));
+      const enteredPathOnPlayerStep =
+        step.key === "playerKind" && isPlayerFilesystemPath(trimmed);
+      const onPlayerPathStep = step.key === "playerPath";
+      const needsPlayerCheck =
+        (enteredPathOnPlayerStep || onPlayerPathStep || atEnd) && next.playerKind !== "null";
+      if (needsPlayerCheck) {
+        setChecking(true);
+        const result = await checkPlayerAvailable(next.playerKind, next.playerPath);
+        setChecking(false);
+        if (!result.ok) {
+          setError(result.message);
+          return;
+        }
+      }
+
+      setError("");
+
+      if (atEnd) {
+        onComplete({ ...next, setupComplete: true, forceGuiPrompt: false });
+        return;
+      }
+
+      const nextStep = STEPS[nextIndex];
+      if (!nextStep) return;
+      setStepIndex(nextIndex);
+      setValue(getStepValue(next, nextStep));
+    })();
   };
+
+  if (!step) return <Text color="red">Setup error: invalid step.</Text>;
 
   return (
     <Box flexDirection="column" padding={1} borderStyle="double" borderColor="cyan">
@@ -134,8 +205,15 @@ export function SetupWizard({ config, onComplete, onCancel }: SetupWizardProps):
           placeholder={step.optional ? "Enter to skip" : undefined}
         />
       </Box>
+      {error ? (
+        <Box marginTop={1}>
+          <Text color="red">{error}</Text>
+        </Box>
+      ) : null}
       <Box marginTop={1}>
-        <Text dimColor>Enter to continue · Esc to cancel</Text>
+        <Text dimColor>
+          {checking ? "Checking player…" : "Enter to continue · Esc to cancel"}
+        </Text>
       </Box>
     </Box>
   );
